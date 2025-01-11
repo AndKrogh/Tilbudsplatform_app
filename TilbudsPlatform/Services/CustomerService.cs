@@ -35,7 +35,8 @@ namespace TilbudsPlatform.core.Services
         public async Task<Customer> AddCustomerAsync(string name, string email)
         {
             var existingCustomer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Email == email);
+                .Where(u => u.Email != null && u.Email.ToLower() == email.ToLower())
+                .FirstOrDefaultAsync();
 
             if (existingCustomer != null)
             {
@@ -52,6 +53,21 @@ namespace TilbudsPlatform.core.Services
             await _context.SaveChangesAsync();
 
             return newCustomer;
+        }
+
+        public async Task<bool> DeleteCustomerByIdAsync(int id)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException($"Customer with ID {id} not found.");
+            }
+
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

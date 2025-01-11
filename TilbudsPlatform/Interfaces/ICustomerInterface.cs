@@ -7,6 +7,7 @@ namespace TilbudsPlatform.Interfaces
         Task<Customer> GetByIdAsync(int id);
         Task<IEnumerable<Customer>> GetAllAsync();
         Task<Customer> AddCustomerAsync(string name, string email);
+        Task<bool> DeleteCustomerByIdAsync(int id);
     }
 
 }

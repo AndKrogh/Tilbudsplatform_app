@@ -1,14 +1,17 @@
 @page "/customer"
-@using TilbudsPlatform.Entities
-@using TilbudsPlatform.Services
-@using TilbudsPlatform.Interfaces
 @inject ICustomerInterface CustomerService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <h3>Customer Page</h3>
 
 <div>
     <h4>Add New Customer</h4>
-    <form>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    <EditForm Model="newCustomer" OnSubmit="AddCustomer">
         <div>
             <label for="name">Name:</label>
             <input id="name" @bind="newCustomer.Name" />
@@ -17,8 +20,8 @@
             <label for="email">Email:</label>
             <input id="email" @bind="newCustomer.Email" />
         </div>
-        <button type="button" @onclick="AddCustomer">Add Customer</button>
-    </form>
+        <button type="submit">Add Customer</button>
+    </EditForm>
 </div>
 
 <hr />
@@ -31,6 +34,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,18 +46,22 @@
                         <td>@customer.Id</td>
                         <td>@customer.Name</td>
                         <td>@customer.Email</td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="() => DeleteCustomerById(customer.Id)">Delete</button>
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="3">No customers available.</td>
+                    <td colspan="4">No customers available.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
 
 @code {
     private Customer newCustomer = new Customer();
@@ -69,15 +77,30 @@
     {
         try
         {
-            var addedCustomer = await CustomerService.AddCustomerAsync(newCustomer.Name, newCustomer.Email);
-            customers.Add(addedCustomer);  
-            newCustomer = new Customer();  
-            errorMessage = string.Empty;   
+            await CustomerService.AddCustomerAsync(newCustomer.Name, newCustomer.Email);
+            newCustomer = new Customer();
+            errorMessage = string.Empty;
+
+            customers = (await CustomerService.GetAllAsync()).ToList();
+
+            NavigationManager.Refresh(true);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";  
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteCustomerById(int id)
+    {
+        try
+        {
+            await CustomerService.DeleteCustomerByIdAsync(id);
+            customers = (await CustomerService.GetAllAsync()).ToList(); // Refresh the list
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
         }
     }
 }
-
