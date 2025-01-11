@@ -1,4 +1,4 @@
-using TilbudsPlatform.web.Components;
+using TilbudsPlatform.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
+
+builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

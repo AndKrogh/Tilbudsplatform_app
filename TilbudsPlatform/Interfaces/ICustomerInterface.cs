@@ -1,10 +1,12 @@
-using TilbudsPlatform.Entities;
+﻿using TilbudsPlatform.Entities;
 
 namespace TilbudsPlatform.Interfaces
 {
     public interface ICustomerInterface
     {
-        Task<IEnumerable<Customer>> GetAllCustomersAsync();
-        Task<Customer?> GetCustomerByIdAsync(int id);
+        Task<Customer> GetByIdAsync(int id);
+        Task<IEnumerable<Customer>> GetAllAsync();
+        Task<Customer> AddAsync(Customer customer);
     }
+
 }

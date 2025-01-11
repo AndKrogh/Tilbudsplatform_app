@@ -1,0 +1,72 @@
+﻿@page "/customer"
+@using TilbudsPlatform.Entities
+@using TilbudsPlatform.Interfaces
+@inject ICustomerInterface CustomerService
+
+<h3>Customer Page</h3>
+
+<div>
+    <h4>Add New Customer</h4>
+    <form>
+        <div>
+            <label for="name">Name:</label>
+            <input id="name" @bind="newCustomer.Name" />
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input id="email" @bind="newCustomer.Email" />
+        </div>
+        <button type="button" @onclick="AddCustomer">Add Customer</button>
+    </form>
+</div>
+
+<hr />
+
+<div>
+    <h4>Customer List</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (customers.Any())
+            {
+                @foreach (var customer in customers)
+                {
+                    <tr>
+                        <td>@customer.Id</td>
+                        <td>@customer.Name</td>
+                        <td>@customer.Email</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">No customers available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private Customer newCustomer = new Customer();
+    private List<Customer> customers = new List<Customer>();
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        customers = (await CustomerService.GetAllAsync()).ToList();
+    }
+
+    private async System.Threading.Tasks.Task AddCustomer()
+    {
+        await CustomerService.AddAsync(newCustomer);
+        newCustomer = new Customer(); 
+        customers = (await CustomerService.GetAllAsync()).ToList(); 
+    }
+}
