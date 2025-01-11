@@ -1,29 +1,57 @@
-﻿using TilbudsPlatform.Entities;
+using Microsoft.EntityFrameworkCore;
+using TilbudsPlatform.Data;
+using TilbudsPlatform.Entities;
 using TilbudsPlatform.Interfaces;
 
 namespace TilbudsPlatform.core.Services
 {
     public class CustomerService : ICustomerInterface
     {
-        private readonly List<Customer> _customers = new();
+        private readonly TilbudsPlatformContext _context;
+
+        public CustomerService(TilbudsPlatformContext context)
+        {
+            _context = context;
+        }
 
         public async Task<Customer> GetByIdAsync(int id)
         {
-            return _customers.FirstOrDefault(c => c.Id == id) ?? throw new KeyNotFoundException("Customer not found.");
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (customer == null)
+            {
+                throw new KeyNotFoundException($"Customer with ID {id} not found.");
+            }
+
+            return customer;
         }
 
         public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            return _customers;
+            return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer> AddAsync(Customer customer)
+        public async Task<Customer> AddCustomerAsync(string name, string email)
         {
-            // Assign a new unique ID to the customer
-            customer.Id = _customers.Count > 0 ? _customers.Max(c => c.Id) + 1 : 1;
+            var existingCustomer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Email == email);
 
-            _customers.Add(customer);
-            return customer;
+            if (existingCustomer != null)
+            {
+                throw new InvalidOperationException($"A customer with email '{email}' already exists.");
+            }
+
+            var newCustomer = new Customer
+            {
+                Name = name,
+                Email = email
+            };
+
+            _context.Customers.Add(newCustomer);
+            await _context.SaveChangesAsync();
+
+            return newCustomer;
         }
     }
 }

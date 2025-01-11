@@ -1,8 +1,8 @@
-﻿using TilbudsPlatform.Model;
+using TilbudsPlatform.Model;
 
 namespace TilbudsPlatform.Entities
 {
-    public class Task
+    public class WorkTask
     {
         required public int Id { get; set; }
         required public string Title { get; set; }

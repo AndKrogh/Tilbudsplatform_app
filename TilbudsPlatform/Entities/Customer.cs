@@ -1,4 +1,4 @@
-﻿using TilbudsPlatform.Model;
+using TilbudsPlatform.Model;
 
 namespace TilbudsPlatform.Entities
 {

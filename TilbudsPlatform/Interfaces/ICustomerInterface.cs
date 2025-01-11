@@ -1,4 +1,4 @@
-﻿using TilbudsPlatform.Entities;
+using TilbudsPlatform.Entities;
 
 namespace TilbudsPlatform.Interfaces
 {
@@ -6,7 +6,7 @@ namespace TilbudsPlatform.Interfaces
     {
         Task<Customer> GetByIdAsync(int id);
         Task<IEnumerable<Customer>> GetAllAsync();
-        Task<Customer> AddAsync(Customer customer);
+        Task<Customer> AddCustomerAsync(string name, string email);
     }
 
 }

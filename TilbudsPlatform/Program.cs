@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TilbudsPlatformContext") ?? throw new InvalidOperationException("Connection string 'TilbudsPlatformContext' not found.")));
 
-builder.Services.AddSingleton<ICustomerInterface, CustomerService>();
+builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 

@@ -1,5 +1,6 @@
-﻿@page "/customer"
+@page "/customer"
 @using TilbudsPlatform.Entities
+@using TilbudsPlatform.Services
 @using TilbudsPlatform.Interfaces
 @inject ICustomerInterface CustomerService
 
@@ -57,16 +58,26 @@
 @code {
     private Customer newCustomer = new Customer();
     private List<Customer> customers = new List<Customer>();
+    private string errorMessage = string.Empty;
 
-    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         customers = (await CustomerService.GetAllAsync()).ToList();
     }
 
-    private async System.Threading.Tasks.Task AddCustomer()
+    private async Task AddCustomer()
     {
-        await CustomerService.AddAsync(newCustomer);
-        newCustomer = new Customer(); 
-        customers = (await CustomerService.GetAllAsync()).ToList(); 
+        try
+        {
+            var addedCustomer = await CustomerService.AddCustomerAsync(newCustomer.Name, newCustomer.Email);
+            customers.Add(addedCustomer);  
+            newCustomer = new Customer();  
+            errorMessage = string.Empty;   
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";  
+        }
     }
 }
+
