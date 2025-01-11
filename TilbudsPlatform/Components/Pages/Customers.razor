@@ -1,0 +1,31 @@
+@page "/customers"
+@using TilbudsPlatform.Entities
+@using System.Linq
+@using TilbudsPlatform.Interfaces
+@using Task = System.Threading.Tasks.Task;
+@inject ICustomerInterface CustomerService
+
+<h1>customer</h1>
+
+<ul>
+    @foreach (var customer in customers)
+    {
+        <li>@customer.Name (@customer.Email)</li>
+    }
+</ul>
+
+<button @onclick="LoadCustomers">Refresh</button>
+
+@code {
+    private IEnumerable<Customer> customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        customers = (await CustomerService.GetAllCustomersAsync()).ToList();
+    }
+}
