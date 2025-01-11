@@ -1,0 +1,127 @@
+@page "/project"
+@inject IProjectInterface ProjectService
+@rendermode InteractiveServer
+
+<h3>Projects</h3>
+
+<div>
+    <h4>Add New Project</h4>
+    <EditForm Model="newProject" OnValidSubmit="CreateProject">
+        <div>
+            <label>Name:</label>
+            <input type="text" @bind="newProject.Name" />
+        </div>
+        <div>
+            <label>Description:</label>
+            <input type="text" @bind="newProject.Description" />
+        </div>
+        <div>
+            <label>Start Date:</label>
+            <input type="date" @bind="newProject.StartDate" />
+        </div>
+        <div>
+            <label>End Date:</label>
+            <input type="date" @bind="newProject.EndDate" />
+        </div>
+        <div>
+            <label>Estimated Hours:</label>
+            <input type="number" @bind="newProject.EstimatedHours" />
+        </div>
+        <div>
+            <label>Hourly Rate:</label>
+            <input type="number" @bind="newProject.HourlyRate" />
+        </div>
+        <div>
+            <label>Profit Margin:</label>
+            <input type="number" @bind="newProject.ProfitMargin" />
+        </div>
+        <div>
+            <label>Customer ID:</label>
+            <input type="number" @bind="newProject.CustomerId" />
+        </div>
+        <button type="submit">Create Project</button>
+    </EditForm>
+</div>
+
+<hr />
+
+<div>
+    <h4>Project List</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Customer</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (projects.Any())
+            {
+                @foreach (var project in projects)
+                {
+                    <tr>
+                        <td>@project.Id</td>
+                        <td>@project.Name</td>
+                        <td>@project.StartDate.ToShortDateString()</td>
+                        <td>@project.EndDate.ToShortDateString()</td>
+                        <td>@project.Customer?.Name</td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">No projects available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private Project newProject = new Project
+        {
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today
+        };
+    private List<Project> projects = new List<Project>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+    }
+
+    private async Task CreateProject()
+    {
+        try
+        {
+            await ProjectService.CreateProjectAsync(newProject);
+            projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+            newProject = new Project { StartDate = DateTime.Today, EndDate = DateTime.Today };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteProject(int id)
+    {
+        try
+        {
+            await ProjectService.DeleteProjectAsync(id);
+            projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}

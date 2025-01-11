@@ -1,0 +1,15 @@
+{
+  "name": "tilbudsplatform",
+  "version": "1.0.0",
+  "description": "edd",
+  "main": "index.js",
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "esbuild main.js --bundle --outfile=dist/bundle.js --watch"
+  },
+  "author": "",
+  "license": "ISC"
+}

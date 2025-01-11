@@ -1,0 +1,63 @@
+﻿/* Top Navigation Bar */
+.top-row {
+    background-color: #343a40; /* Dark background for navbar */
+    color: white; /* White text */
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between; /* Pushes items to the sides */
+    align-items: center;
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 15px; /* Space between nav items */
+}
+
+    .navbar-links .nav-link {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .navbar-links .nav-link:hover {
+            background-color: #495057; /* Darker hover effect */
+        }
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+    .navbar-links {
+        flex-direction: column; /* Stack links on smaller screens */
+        align-items: flex-start;
+        background-color: #343a40; /* Keep consistent background */
+        position: absolute;
+        top: 50px;
+        right: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        display: none; /* Hide by default */
+    }
+
+        .navbar-links.open {
+            display: flex; /* Show when toggled */
+        }
+
+    .navbar-toggler {
+        display: block;
+        background-color: #343a40;
+        border: none;
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+    }
+}
