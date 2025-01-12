@@ -16,5 +16,6 @@ namespace TilbudsPlatform.Model
         public Customer Customer { get; set; }
         public ICollection<Worklog> Worklog { get; set; }
         public Estimate Estimate { get; set; }
+        public ICollection<WorkTask> WorkTasks { get; set; }
     }
 }

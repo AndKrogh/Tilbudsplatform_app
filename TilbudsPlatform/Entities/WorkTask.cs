@@ -4,11 +4,18 @@ namespace TilbudsPlatform.Entities
 {
     public class WorkTask
     {
-        required public int Id { get; set; }
-        required public string Title { get; set; }
-        required public string Description { get; set; }
-        required public decimal DurationHours { get; set; }
-        required public int ProjectId { get; set; }
+        public int Id { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public decimal DurationHours { get; set; }
+
+        public int ProjectId { get; set; }
+
         public Project Project { get; set; }
+
+        public ICollection<Worklog> Worklogs { get; set; }
     }
 }

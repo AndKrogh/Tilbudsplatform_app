@@ -1,10 +1,14 @@
-using TilbudsPlatform.Entities;
+using TilbudsPlatform.Data;
 
-namespace TilbudsPlatform.Services
+namespace TilbudsPlatform.core.Services
 {
-    public interface WorklogService
+    public class WorklogService
     {
-        Task<Worklog> AddWorklogAsync(Worklog worklog);
-        Task<IEnumerable<Worklog>> GetWorklogsByProjectIdAsync(int projectId);
+        private readonly TilbudsPlatformContext _context;
+
+        public WorklogService(TilbudsPlatformContext context)
+        {
+            _context = context;
+        }
     }
 }

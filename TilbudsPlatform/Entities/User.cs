@@ -1,12 +1,17 @@
-﻿namespace TilbudsPlatform.Entities
+namespace TilbudsPlatform.Entities
 {
     public class User
     {
-        required public int Id { get; set; }
-        required public string FirstName { get; set; }
-        required public string LastName { get; set; }
-        required public string Email { get; set; }
-        required public string Role { get; set; }
-        public ICollection<Worklog> Worklog { get; set; }
+        public int Id { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Role { get; set; }
+
+        public ICollection<Worklog> Worklogs { get; set; }
     }
 }

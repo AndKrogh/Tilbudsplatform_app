@@ -3,7 +3,7 @@ using TilbudsPlatform.Data;
 using TilbudsPlatform.Entities;
 using TilbudsPlatform.Interfaces;
 
-namespace TilbudsPlatform.Core.Services
+namespace TilbudsPlatform.core.Services
 {
     public class EstimateService : IEstimateInterface
     {

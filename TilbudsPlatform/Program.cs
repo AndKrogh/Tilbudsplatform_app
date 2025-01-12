@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TilbudsPlatform.core.Components;
 using TilbudsPlatform.core.Services;
-using TilbudsPlatform.Core.Services;
 using TilbudsPlatform.Data;
 using TilbudsPlatform.Interfaces;
 
@@ -12,6 +11,7 @@ builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
 builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 builder.Services.AddScoped<IProjectInterface, ProjectService>();
 builder.Services.AddScoped<IEstimateInterface, EstimateService>();
+builder.Services.AddScoped<IUserInterface, UserService>();
 
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();

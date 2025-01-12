@@ -4,7 +4,8 @@ namespace TilbudsPlatform.Interfaces
 {
     public interface IUserInterface
     {
-        Task<User> GetByIdAsync(int id);
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<User> CreateUserAsync(User user);
+        Task<User> GetUserByIdAsync(int id);
+        Task<IEnumerable<User>> GetAllUsersAsync();
     }
 }

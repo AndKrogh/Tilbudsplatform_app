@@ -11,12 +11,35 @@ namespace TilbudsPlatform.Data
         public DbSet<Worklog> Worklogs { get; set; }
         public DbSet<Estimate> Estimates { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<WorkTask> Tasks { get; set; }
+        public DbSet<WorkTask> WorkTasks { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
 
         public TilbudsPlatformContext(DbContextOptions<TilbudsPlatformContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Worklog>()
+                .HasOne(w => w.WorkTask)
+                .WithMany(t => t.Worklogs)
+                .HasForeignKey(w => w.WorkTaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Worklog>()
+                .HasOne(w => w.User)
+                .WithMany(u => u.Worklogs)
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WorkTask>()
+                .HasOne(t => t.Project)
+                .WithMany(p => p.WorkTasks)
+                .HasForeignKey(t => t.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
         }
 
     }

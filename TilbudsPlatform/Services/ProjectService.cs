@@ -4,7 +4,7 @@ using TilbudsPlatform.Entities;
 using TilbudsPlatform.Interfaces;
 using TilbudsPlatform.Model;
 
-namespace TilbudsPlatform.Core.Services
+namespace TilbudsPlatform.core.Services
 {
     public class ProjectService : IProjectInterface
     {

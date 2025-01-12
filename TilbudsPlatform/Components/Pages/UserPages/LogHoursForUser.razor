@@ -1,0 +1,77 @@
+@page "/log-hours"
+@inject IProjectInterface ProjectService
+@inject IUserInterface UserService
+
+<h3>Log Hours</h3>
+
+@* <EditForm Model="newWorklog" OnValidSubmit="HandleLogHours">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="userId">User:</label>
+        <InputSelect id="userId" @bind-Value="newWorklog.UserId" class="form-select">
+            <option value="">Select a user</option>
+            @foreach (var user in users)
+            {
+                <option value="@user.Id">@user.FirstName @user.LastName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label for="projectId">Project:</label>
+        <InputSelect id="projectId" @bind-Value="newWorklog.ProjectId" class="form-select">
+            <option value="">Select a project</option>
+            @foreach (var project in projects)
+            {
+                <option value="@project.Id">@project.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label for="hoursLogged">Hours Logged:</label>
+        <InputNumber id="hoursLogged" @bind-Value="newWorklog.HoursLogged" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log Hours</button>
+</EditForm>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger mt-3">@errorMessage</div>
+}
+
+@code {
+    private Worklog newWorklog = new Worklog();
+    private List<User> users = new();
+    private List<Project> projects = new();
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            users = await UserService.GetUsersAsync();
+            projects = await ProjectService.GetProjectsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+    }
+
+    private async Task HandleLogHours()
+    {
+        try
+        {
+            await WorklogService.CreateWorklogAsync(newWorklog);
+            newWorklog = new Worklog(); // Reset the form
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error logging hours: {ex.Message}";
+        }
+    }
+} *@
