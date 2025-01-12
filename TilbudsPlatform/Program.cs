@@ -11,6 +11,8 @@ builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
 
 builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 builder.Services.AddScoped<IProjectInterface, ProjectService>();
+builder.Services.AddScoped<IEstimateInterface, EstimateService>();
+
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 

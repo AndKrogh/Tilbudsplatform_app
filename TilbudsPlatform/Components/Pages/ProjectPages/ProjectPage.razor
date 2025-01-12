@@ -1,5 +1,6 @@
 @page "/project"
 @inject IProjectInterface ProjectService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <h3>Projects</h3>
@@ -39,7 +40,7 @@
             <label>Customer ID:</label>
             <input type="number" @bind="newProject.CustomerId" />
         </div>
-        <button type="submit">Create Project</button>
+        <button class="btn btn-primary" type="submit">Create Project</button>
     </EditForm>
 </div>
 
@@ -71,6 +72,7 @@
                         <td>@project.Customer?.Name</td>
                         <td>
                             <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Delete</button>
+                            <button class="btn btn-primary" @onclick="() => NavigateToEstimate(project.Id)">View Estimate</button>
                         </td>
                     </tr>
                 }
@@ -123,5 +125,10 @@
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
+    }
+
+    private void NavigateToEstimate(int projectId)
+    {
+        NavigationManager.NavigateTo($"/estimate/{projectId}");
     }
 }

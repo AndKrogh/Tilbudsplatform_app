@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TilbudsPlatform.Data;
+using TilbudsPlatform.Entities;
 using TilbudsPlatform.Interfaces;
 using TilbudsPlatform.Model;
 
@@ -18,8 +19,22 @@ namespace TilbudsPlatform.Core.Services
         {
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
+
+            var totalCost = project.EstimatedHours * project.HourlyRate;
+            var estimate = new Estimate
+            {
+                ProjectId = project.Id,
+                EstimatedHours = project.EstimatedHours,
+                HourlyRate = project.HourlyRate,
+                TotalCost = totalCost
+            };
+
+            _context.Estimates.Add(estimate);
+            await _context.SaveChangesAsync();
+
             return project;
         }
+
 
         public async Task UpdateProjectAsync(Project project)
         {
