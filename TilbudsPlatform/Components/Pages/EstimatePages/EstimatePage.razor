@@ -1,0 +1,42 @@
+@page "/estimate/{projectId:int}"
+@inject IEstimateInterface EstimateService
+
+<h3>Estimate</h3>
+
+@if (estimate != null)
+{
+    <div>
+        <h4>Estimate Details</h4>
+        <p><strong>Project ID:</strong> @estimate.ProjectId</p>
+        <p><strong>Estimated Hours:</strong> @estimate.EstimatedHours</p>
+        <p><strong>Hourly Rate:</strong> @estimate.HourlyRate</p>
+        <p><strong>Total Cost:</strong> @estimate.TotalCost</p>
+    </div>
+}
+else if (errorMessage != null)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter] public int ProjectId { get; set; }
+    private Estimate estimate;
+    private string errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            estimate = await EstimateService.GetByProjectIdAsync(ProjectId);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}
