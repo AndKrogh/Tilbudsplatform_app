@@ -2,6 +2,14 @@
 @inject IProjectInterface ProjectService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
+@using DocumentFormat.OpenXml;
+@using DocumentFormat.OpenXml.Packaging;
+@using DocumentFormat.OpenXml.Spreadsheet;
+@inject IJSRuntime js
+
+<HeadContent>
+    <script type="text/javascript" src="js/DownloadExcelFile.js"></script>
+</HeadContent>
 
 <h3>Projekter</h3>
 
@@ -73,6 +81,7 @@
                         <td>
                             <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Slet</button>
                             <button class="btn btn-primary" @onclick="() => NavigateToEstimate(project.Id)">Estimat</button>
+                            <button class="btn btn-primary" onclick="() => ExportToExcel">Eksporter som excel</button>
                         </td>
                     </tr>
                 }
@@ -130,5 +139,89 @@
     private void NavigateToEstimate(int projectId)
     {
         NavigationManager.NavigateTo($"/estimate/{projectId}");
+    }
+
+    private async Task ExportToExcel()
+    {
+        MemoryStream ms = new MemoryStream();
+
+        // Create a spreadsheet document by supplying the filepath.
+        // By default, AutoSave = true, Editable = true, and Type = xlsx.
+        SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook);
+
+        // Add a WorkbookPart to the document.
+        WorkbookPart workbookPart = spreadsheetDocument.AddWorkbookPart();
+        workbookPart.Workbook = new Workbook();
+
+        // Add a WorksheetPart to the WorkbookPart.
+        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+        var sheetData = new SheetData();
+        worksheetPart.Worksheet = new Worksheet(sheetData);
+
+        //add header row
+        Row headerRow = new Row();
+        string[] headerNames = { "Projekt ID", "Navn", "Start Dato", "Slut Dato", "Kunde" };
+        Cell[] headerCells = new Cell[headerNames.Length];
+
+        for(var i = 0; i<headerNames.Length; i++)
+        {
+            headerCells[i] = new Cell();
+            headerCells[i].DataType = CellValues.String;
+            headerCells[i].CellValue = new CellValue(headerNames[i]);
+            headerRow.Append(headerCells[i]);
+        }
+        sheetData.Append(headerRow);
+
+        //add data row
+        Row dataRow;
+        Cell[] dataCells;
+
+        foreach (var project in projects)
+        {
+            dataRow = new Row();
+            dataCells = new Cell[5];
+
+            dataCells[0] = new Cell();
+            dataCells[0].DataType = CellValues.String;
+            dataCells[0].CellValue = new CellValue(project.Id);
+            dataRow.Append(dataCells[0]);
+
+            dataCells[1] = new Cell();
+            dataCells[1].DataType = CellValues.String;
+            dataCells[1].CellValue = new CellValue(project.Name);
+            dataRow.Append(dataCells[1]);
+
+            dataCells[2] = new Cell();
+            dataCells[2].DataType = CellValues.String;
+            dataCells[2].CellValue = new CellValue(project.StartDate);
+            dataRow.Append(dataCells[2]);
+
+            dataCells[3] = new Cell();
+            dataCells[3].DataType = CellValues.String;
+            dataCells[3].CellValue = new CellValue(project.EndDate);
+            dataRow.Append(dataCells[3]);
+
+            dataCells[4] = new Cell();
+            dataCells[4].DataType = CellValues.String;
+            dataCells[4].CellValue = new CellValue(project.Customer.Name);
+            dataRow.Append(dataCells[3]);
+
+            sheetData.Append(dataRow);
+        }
+
+        // Add Sheets to the Workbook.
+        Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+        // Append a new worksheet and associate it with the workbook.
+        Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "mySheet" };
+        sheets.Append(sheet);
+
+        workbookPart.Workbook.Save();
+        spreadsheetDocument.Save();
+
+        // Dispose the document.
+        spreadsheetDocument.Dispose();
+
+        await js.InvokeVoidAsync("downloadFile", "Kalkulation.xlsx", Convert.ToBase64String(ms.ToArray()));
     }
 }
