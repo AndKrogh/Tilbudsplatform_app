@@ -3,60 +3,60 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Projects</h3>
+<h3>Projekter</h3>
 
 <div>
-    <h4>Add New Project</h4>
+    <h4>Opret nyt projekt</h4>
     <EditForm Model="newProject" OnValidSubmit="CreateProject">
         <div>
-            <label>Name:</label>
+            <label>Projekt Navn:</label>
             <input type="text" @bind="newProject.Name" />
         </div>
         <div>
-            <label>Description:</label>
+            <label>Beskrivelse:</label>
             <input type="text" @bind="newProject.Description" />
         </div>
         <div>
-            <label>Start Date:</label>
+            <label>Start Dato:</label>
             <input type="date" @bind="newProject.StartDate" />
         </div>
         <div>
-            <label>End Date:</label>
+            <label>Slut Dato:</label>
             <input type="date" @bind="newProject.EndDate" />
         </div>
         <div>
-            <label>Estimated Hours:</label>
+            <label>Estimeret Timer:</label>
             <input type="number" @bind="newProject.EstimatedHours" />
         </div>
         <div>
-            <label>Hourly Rate:</label>
+            <label>Timepris:</label>
             <input type="number" @bind="newProject.HourlyRate" />
         </div>
         <div>
-            <label>Profit Margin:</label>
+            <label>Overskudsgrad:</label>
             <input type="number" @bind="newProject.ProfitMargin" />
         </div>
         <div>
-            <label>Customer ID:</label>
+            <label>Kunde ID:</label>
             <input type="number" @bind="newProject.CustomerId" />
         </div>
-        <button class="btn btn-primary" type="submit">Create Project</button>
+        <button class="btn btn-primary" type="submit">Opret</button>
     </EditForm>
 </div>
 
 <hr />
 
 <div>
-    <h4>Project List</h4>
+    <h4>Projektliste</h4>
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Customer</th>
-                <th>Actions</th>
+                <th>Projekt ID</th>
+                <th>Navn</th>
+                <th>Start Dato</th>
+                <th>Slut Dato</th>
+                <th>Kunde</th>
+                <th>Handlinger</th>
             </tr>
         </thead>
         <tbody>
@@ -71,8 +71,8 @@
                         <td>@project.EndDate.ToShortDateString()</td>
                         <td>@project.Customer?.Name</td>
                         <td>
-                            <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Delete</button>
-                            <button class="btn btn-primary" @onclick="() => NavigateToEstimate(project.Id)">View Estimate</button>
+                            <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Slet</button>
+                            <button class="btn btn-primary" @onclick="() => NavigateToEstimate(project.Id)">Estimat</button>
                         </td>
                     </tr>
                 }

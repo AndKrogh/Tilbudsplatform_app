@@ -3,38 +3,38 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Customer Page</h3>
+<h3>Kundeside</h3>
 
 <div>
-    <h4>Add New Customer</h4>
+    <h4>Opret ny kunde</h4>
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger">@errorMessage</div>
     }
     <EditForm Model="newCustomer" OnSubmit="AddCustomer">
         <div>
-            <label for="name">Name:</label>
+            <label for="name">Navn:</label>
             <input id="name" @bind="newCustomer.Name" />
         </div>
         <div>
             <label for="email">Email:</label>
             <input id="email" @bind="newCustomer.Email" />
         </div>
-        <button class="btn btn-primary" type="submit">Add Customer</button>
+        <button class="btn btn-primary" type="submit">Opret kunde</button>
     </EditForm>
 </div>
 
 <hr />
 
 <div>
-    <h4>Customer List</h4>
+    <h4>Kundeliste</h4>
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
+                <th>Kunde ID</th>
+                <th>Navn</th>
                 <th>Email</th>
-                <th>Actions</th>
+                <th>Handlinger</th>
             </tr>
         </thead>
         <tbody>
@@ -47,7 +47,7 @@
                         <td>@customer.Name</td>
                         <td>@customer.Email</td>
                         <td>
-                            <button class="btn btn-danger" @onclick="() => DeleteCustomerById(customer.Id)">Delete</button>
+                            <button class="btn btn-danger" @onclick="() => DeleteCustomerById(customer.Id)">Slet</button>
                         </td>
                     </tr>
                 }

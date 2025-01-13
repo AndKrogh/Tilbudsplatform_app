@@ -1,16 +1,33 @@
 @page "/estimate/{projectId:int}"
 @inject IEstimateInterface EstimateService
+@inject IProjectInterface ProjectService
 
-<h3>Estimate</h3>
+<h3>Samlede omkostninger</h3>
 
-@if (estimate != null)
+@if (estimate != null && project != null)
 {
     <div>
         <h4>Estimate Details</h4>
-        <p><strong>Project ID:</strong> @estimate.ProjectId</p>
-        <p><strong>Estimated Hours:</strong> @estimate.EstimatedHours</p>
-        <p><strong>Hourly Rate:</strong> @estimate.HourlyRate</p>
-        <p><strong>Total Cost:</strong> @estimate.TotalCost</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Projekt ID</th>
+                    <th>Projekt Navn</th>
+                    <th>Estimeret Timer</th>
+                    <th>Timepris</th>
+                    <th>Samlede Omkostninger</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@estimate.ProjectId</td>
+                    <td>@project.Name</td>
+                    <td>@estimate.EstimatedHours</td>
+                    <td>@estimate.HourlyRate</td>
+                    <td>@estimate.TotalCost</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 }
 else if (errorMessage != null)
@@ -24,6 +41,7 @@ else
 
 @code {
     [Parameter] public int ProjectId { get; set; }
+    private Project project;
     private Estimate estimate;
     private string errorMessage;
 
@@ -32,6 +50,7 @@ else
         try
         {
             estimate = await EstimateService.GetByProjectIdAsync(ProjectId);
+            project = await ProjectService.GetProjectByIdAsync(ProjectId);
         }
         catch (Exception ex)
         {

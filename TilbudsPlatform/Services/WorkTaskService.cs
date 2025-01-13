@@ -26,6 +26,9 @@ namespace TilbudsPlatform.core.Services
 
         public async Task LogHoursAsync(int workTaskId, decimal hours, string description)
         {
+            if (hours <= 0)
+                throw new ArgumentException("Logged hours must be greater than zero.", nameof(hours));
+
             var workTask = await _context.WorkTasks.Include(w => w.Worklogs).FirstOrDefaultAsync(w => w.Id == workTaskId);
             if (workTask == null)
             {
@@ -46,6 +49,9 @@ namespace TilbudsPlatform.core.Services
 
         public async Task UpdateLoggedHoursAsync(int worklogId, decimal newHours, string newDescription)
         {
+            if (newHours <= 0)
+                throw new ArgumentException("Updated hours must be greater than zero.", nameof(newHours));
+
             var worklog = await _context.Worklogs.FirstOrDefaultAsync(w => w.Id == worklogId);
             if (worklog == null)
             {

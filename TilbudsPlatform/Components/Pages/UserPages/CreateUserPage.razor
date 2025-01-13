@@ -3,18 +3,18 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Create User</h3>
+<h3>Opret ny bruger</h3>
 
 <EditForm Model="newUser" OnValidSubmit="HandleCreateUser" FormName="CreateUserForm">
     <ValidationSummary />
 
     <div class="mb-3">
-        <label for="firstName">First Name:</label>
+        <label for="firstName">Fornavn:</label>
         <InputText id="firstName" @bind-Value="newUser.FirstName" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label for="lastName">Last Name:</label>
+        <label for="lastName">Efternavn:</label>
         <InputText id="lastName" @bind-Value="newUser.LastName" class="form-control" />
     </div>
 
@@ -24,11 +24,11 @@
     </div>
 
     <div class="mb-3">
-        <label for="role">Role:</label>
+        <label for="role">Rolle:</label>
         <InputText id="role" @bind-Value="newUser.Role" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-primary">Create User</button>
+    <button type="submit" class="btn btn-primary">Opret</button>
 </EditForm>
 
 
@@ -37,7 +37,7 @@
     <div class="alert alert-danger mt-3">@errorMessage</div>
 }
 
-<h3 class="mt-5">User List</h3>
+<h3 class="mt-5">Brugerliste</h3>
 
 @if (users == null)
 {
@@ -49,13 +49,13 @@ else if (!users.Any())
 }
 else
 {
-    <table class="table table-striped mt-3">
+    <table class="table">
         <thead>
             <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
+                <th>Fornavn</th>
+                <th>Efternavn</th>
                 <th>Email</th>
-                <th>Role</th>
+                <th>Rolle</th>
             </tr>
         </thead>
         <tbody>

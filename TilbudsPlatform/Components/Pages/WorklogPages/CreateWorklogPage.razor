@@ -6,31 +6,31 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Create Worklog</h3>
+<h3>Opret ny arbejdslog</h3>
 
 <EditForm Model="newWorklog" OnValidSubmit="HandleCreateWorklog">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div>
-        <label for="description">Description:</label>
+        <label for="description">Beskrivelse:</label>
         <InputText id="description" @bind-Value="newWorklog.Description" />
     </div>
 
     <div>
-        <label for="hoursWorked">Hours Worked:</label>
+        <label for="hoursWorked">Timer brugt:</label>
         <InputNumber id="hoursWorked" @bind-Value="newWorklog.HoursWorked" />
     </div>
 
     <div>
-        <label for="dateWorked">Date Worked:</label>
+        <label for="dateWorked">Dato:</label>
         <InputDate id="dateWorked" @bind-Value="newWorklog.DateWorked" />
     </div>
 
     <div>
-        <label for="workTaskId">Work Task:</label>
+        <label for="workTaskId">Arbejdsopgave:</label>
         <select id="workTaskId" @bind="selectedWorkTaskId">
-            <option value="">Select Work Task</option>
+            <option value="">Vælg</option>
             @if (workTasks != null)
             {
                 @foreach (var workTask in workTasks)
@@ -46,26 +46,26 @@
     </div>
 
     <div>
-        <label for="createNewWorkTask">OR Create New Work Task</label>
+        <label for="createNewWorkTask">Eller lav ny arbejdsopgave</label>
         <InputCheckbox id="createNewWorkTask" @bind-Value="createNewWorkTask" />
     </div>
 
     @if (createNewWorkTask)
     {
         <div>
-            <label for="newWorkTaskTitle">New Work Task Title:</label>
+            <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
             <InputText id="newWorkTaskTitle" @bind-Value="newWorkTaskTitle" />
         </div>
 
         <div>
-            <label for="newWorkTaskDescription">New Work Task Description:</label>
+            <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
             <InputText id="newWorkTaskDescription" @bind-Value="newWorkTaskDescription" />
         </div>
 
         <div>
-            <label for="newProjectId">Select Project for Work Task:</label>
+            <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
             <select id="newProjectId" @bind="newProjectId">
-                <option value="">Select Project</option>
+                <option value="">Vælg</option>
                 @if (projects != null)
                 {
                     @foreach (var project in projects)
@@ -82,9 +82,9 @@
     }
 
     <div>
-        <label for="userId">User:</label>
+        <label for="userId">Bruger:</label>
         <select id="userId" @bind="newWorklog.UserId">
-            <option value="">Select User</option>
+            <option value="">Vælg bruger</option>
             @if (users != null)
             {
                 @foreach (var user in users)
@@ -99,7 +99,7 @@
         </select>
     </div>
 
-    <button type="submit">Add Worklog</button>
+    <button type="submit">Opret arbejdslog</button>
 </EditForm>
 
 @if (errorMessage != null)
@@ -107,7 +107,7 @@
     <div>@errorMessage</div>
 }
 
-<h3>Worklog List</h3>
+<h3>Arbejdslogs</h3>
 
 @if (worklogs == null)
 {
@@ -119,15 +119,15 @@ else if (!worklogs.Any())
 }
 else
 {
-    <table>
+    <table class="table">
         <thead>
             <tr>
-                <th>Description</th>
-                <th>Hours Worked</th>
-                <th>Date Worked</th>
-                <th>Work Task</th>
-                <th>User</th>
-                <th>Project</th>
+                <th>Beskrivelse</th>
+                <th>Timer brugt</th>
+                <th>Dato</th>
+                <th>Arbejdsopgave</th>
+                <th>Bruger</th>
+                <th>Projekt</th>
             </tr>
         </thead>
         <tbody>

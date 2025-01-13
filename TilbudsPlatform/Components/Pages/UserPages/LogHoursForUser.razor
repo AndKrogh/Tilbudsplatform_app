@@ -2,46 +2,50 @@
 @inject IWorkTaskInterface WorkTaskService
 @rendermode InteractiveServer
 
-<h3>Log Hours</h3>
+<h3>Timelog</h3>
 
 <div class="mb-3">
-    <label for="workTaskId">Work Task ID:</label>
+    <label for="workTaskId">Arbejdsopgave ID:</label>
     <InputNumber id="workTaskId" @bind-Value="workTaskId" class="form-control" />
 </div>
 
 <div class="mb-3">
-    <label for="description">Description:</label>
+    <label for="description">Beskrivelse:</label>
     <InputText id="description" @bind-Value="logDescription" class="form-control" />
 </div>
 
 <div class="mb-3">
-    <label for="hours">Hours:</label>
+    <label for="hours">Timer:</label>
     <InputNumber id="hours" @bind-Value="logHours" class="form-control" />
 </div>
 
-<button class="btn btn-primary" @onclick="LogHours">Log Hours</button>
+<button class="btn btn-primary" @onclick="LogHours" disabled="@isLoading">Log Hours</button>
 
-<h4 class="mt-5">Update Logged Hours</h4>
+<h4 class="mt-5">Opdater Timelog</h4>
 <div class="mb-3">
-    <label for="worklogId">Worklog ID:</label>
+    <label for="worklogId">Arbejdslog ID:</label>
     <InputNumber id="worklogId" @bind-Value="worklogId" class="form-control" />
 </div>
 
 <div class="mb-3">
-    <label for="updateDescription">New Description:</label>
+    <label for="updateDescription">Ny Beskrivelse:</label>
     <InputText id="updateDescription" @bind-Value="updateDescription" class="form-control" />
 </div>
 
 <div class="mb-3">
-    <label for="updateHours">New Hours:</label>
+    <label for="updateHours">Ny Timer:</label>
     <InputNumber id="updateHours" @bind-Value="updateHours" class="form-control" />
 </div>
 
-<button class="btn btn-success" @onclick="UpdateLoggedHours">Update Hours</button>
+<button class="btn btn-success" @onclick="UpdateLoggedHours" disabled="@isLoading">Opdater timer</button>
 
-<h4 class="mt-5">Worklogs for Task ID: @workTaskId</h4>
+<h4 class="mt-5">Arbejdsopgaver for opgave ID: @workTaskId</h4>
 
-@if (worklogs == null)
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (worklogs == null)
 {
     <p>Enter a Work Task ID and log hours to view worklogs.</p>
 }
@@ -90,19 +94,26 @@ else
 
     private IEnumerable<Worklog>? worklogs;
     private string? errorMessage;
+    private bool isLoading = false;
 
     private async Task LogHours()
     {
         try
         {
+            isLoading = true;
             await WorkTaskService.LogHoursAsync(workTaskId, logHours, logDescription);
             await LoadWorklogs();
             logHours = 0;
             logDescription = string.Empty;
+            errorMessage = null;
         }
         catch (Exception ex)
         {
             errorMessage = $"Error logging hours: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
@@ -110,14 +121,20 @@ else
     {
         try
         {
+            isLoading = true;
             await WorkTaskService.UpdateLoggedHoursAsync(worklogId, updateHours, updateDescription);
             await LoadWorklogs();
             updateHours = 0;
             updateDescription = string.Empty;
+            errorMessage = null;
         }
         catch (Exception ex)
         {
             errorMessage = $"Error updating logged hours: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
@@ -125,11 +142,21 @@ else
     {
         try
         {
-            await WorkTaskService.GetByProjectIdAsync(workTaskId);
+            isLoading = true;
+
+            var workTasks = await WorkTaskService.GetByProjectIdAsync(workTaskId);
+
+            worklogs = workTasks.SelectMany(wt => wt.Worklogs).ToList();
+
+            errorMessage = null;
         }
         catch (Exception ex)
         {
             errorMessage = $"Error loading worklogs: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
