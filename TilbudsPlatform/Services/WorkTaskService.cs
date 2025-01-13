@@ -14,14 +14,9 @@ namespace TilbudsPlatform.core.Services
             _context = context;
         }
 
-        public async Task<WorkTask> GetByIdAsync(int id)
+        public async Task<IEnumerable<WorkTask>> GetAllWorkTasksAsync()
         {
-            var workTask = await _context.WorkTasks.Include(w => w.Project).Include(w => w.Worklogs).FirstOrDefaultAsync(w => w.Id == id);
-            if (workTask == null)
-            {
-                throw new KeyNotFoundException($"WorkTask with ID {id} not found.");
-            }
-            return workTask;
+            return await _context.WorkTasks.ToListAsync();
         }
 
         public async Task<IEnumerable<WorkTask>> GetByProjectIdAsync(int projectId)
@@ -60,6 +55,13 @@ namespace TilbudsPlatform.core.Services
             worklog.HoursWorked = newHours;
             worklog.Description = newDescription;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<WorkTask> CreateAsync(WorkTask workTask)
+        {
+            _context.WorkTasks.Add(workTask);
+            await _context.SaveChangesAsync();
+            return workTask;
         }
     }
 }
