@@ -12,6 +12,8 @@ builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 builder.Services.AddScoped<IProjectInterface, ProjectService>();
 builder.Services.AddScoped<IEstimateInterface, EstimateService>();
 builder.Services.AddScoped<IUserInterface, UserService>();
+builder.Services.AddScoped<IWorklogInterface, WorklogService>();
+builder.Services.AddScoped<IWorkTaskInterface, WorkTaskService>();
 
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();

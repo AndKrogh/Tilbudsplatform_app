@@ -1,77 +1,136 @@
 @page "/log-hours"
-@inject IProjectInterface ProjectService
-@inject IUserInterface UserService
+@inject IWorkTaskInterface WorkTaskService
+@rendermode InteractiveServer
 
 <h3>Log Hours</h3>
 
-@* <EditForm Model="newWorklog" OnValidSubmit="HandleLogHours">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="mb-3">
+    <label for="workTaskId">Work Task ID:</label>
+    <InputNumber id="workTaskId" @bind-Value="workTaskId" class="form-control" />
+</div>
 
-    <div class="mb-3">
-        <label for="userId">User:</label>
-        <InputSelect id="userId" @bind-Value="newWorklog.UserId" class="form-select">
-            <option value="">Select a user</option>
-            @foreach (var user in users)
+<div class="mb-3">
+    <label for="description">Description:</label>
+    <InputText id="description" @bind-Value="logDescription" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label for="hours">Hours:</label>
+    <InputNumber id="hours" @bind-Value="logHours" class="form-control" />
+</div>
+
+<button class="btn btn-primary" @onclick="LogHours">Log Hours</button>
+
+<h4 class="mt-5">Update Logged Hours</h4>
+<div class="mb-3">
+    <label for="worklogId">Worklog ID:</label>
+    <InputNumber id="worklogId" @bind-Value="worklogId" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label for="updateDescription">New Description:</label>
+    <InputText id="updateDescription" @bind-Value="updateDescription" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label for="updateHours">New Hours:</label>
+    <InputNumber id="updateHours" @bind-Value="updateHours" class="form-control" />
+</div>
+
+<button class="btn btn-success" @onclick="UpdateLoggedHours">Update Hours</button>
+
+<h4 class="mt-5">Worklogs for Task ID: @workTaskId</h4>
+
+@if (worklogs == null)
+{
+    <p>Enter a Work Task ID and log hours to view worklogs.</p>
+}
+else if (!worklogs.Any())
+{
+    <p>No worklogs found for this task.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Hours</th>
+                <th>Date Worked</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in worklogs)
             {
-                <option value="@user.Id">@user.FirstName @user.LastName</option>
+                <tr>
+                    <td>@log.Id</td>
+                    <td>@log.Description</td>
+                    <td>@log.HoursWorked</td>
+                    <td>@log.DateWorked</td>
+                </tr>
             }
-        </InputSelect>
-    </div>
-
-    <div class="mb-3">
-        <label for="projectId">Project:</label>
-        <InputSelect id="projectId" @bind-Value="newWorklog.ProjectId" class="form-select">
-            <option value="">Select a project</option>
-            @foreach (var project in projects)
-            {
-                <option value="@project.Id">@project.Name</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="mb-3">
-        <label for="hoursLogged">Hours Logged:</label>
-        <InputNumber id="hoursLogged" @bind-Value="newWorklog.HoursLogged" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Log Hours</button>
-</EditForm>
+        </tbody>
+    </table>
+}
 
 @if (errorMessage != null)
 {
-    <div class="alert alert-danger mt-3">@errorMessage</div>
+    <div class="alert alert-danger">@errorMessage</div>
 }
 
 @code {
-    private Worklog newWorklog = new Worklog();
-    private List<User> users = new();
-    private List<Project> projects = new();
+    private int workTaskId;
+    private decimal logHours;
+    private string logDescription = string.Empty;
+
+    private int worklogId;
+    private decimal updateHours;
+    private string updateDescription = string.Empty;
+
+    private IEnumerable<Worklog>? worklogs;
     private string? errorMessage;
 
-    protected override async Task OnInitializedAsync()
+    private async Task LogHours()
     {
         try
         {
-            users = await UserService.GetUsersAsync();
-            projects = await ProjectService.GetProjectsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error loading data: {ex.Message}";
-        }
-    }
-
-    private async Task HandleLogHours()
-    {
-        try
-        {
-            await WorklogService.CreateWorklogAsync(newWorklog);
-            newWorklog = new Worklog(); // Reset the form
+            await WorkTaskService.LogHoursAsync(workTaskId, logHours, logDescription);
+            await LoadWorklogs();
+            logHours = 0;
+            logDescription = string.Empty;
         }
         catch (Exception ex)
         {
             errorMessage = $"Error logging hours: {ex.Message}";
         }
     }
-} *@
+
+    private async Task UpdateLoggedHours()
+    {
+        try
+        {
+            await WorkTaskService.UpdateLoggedHoursAsync(worklogId, updateHours, updateDescription);
+            await LoadWorklogs();
+            updateHours = 0;
+            updateDescription = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating logged hours: {ex.Message}";
+        }
+    }
+
+    private async Task LoadWorklogs()
+    {
+        try
+        {
+            var task = await WorkTaskService.GetByIdAsync(workTaskId);
+            worklogs = task.Worklogs;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading worklogs: {ex.Message}";
+        }
+    }
+}

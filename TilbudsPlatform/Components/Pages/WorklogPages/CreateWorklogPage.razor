@@ -1,0 +1,135 @@
+@page "/Create-worklogs"
+@inject IWorklogInterface WorklogService
+@inject IUserInterface UserService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Create Worklog</h3>
+
+<EditForm Model="@newWorklog" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="description">Description:</label>
+        <InputText id="description" @bind-Value="newWorklog.Description" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="hoursWorked">Hours Worked:</label>
+        <InputNumber id="hoursWorked" @bind-Value="newWorklog.HoursWorked" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="dateWorked">Date Worked:</label>
+        <InputDate id="dateWorked" @bind-Value="newWorklog.DateWorked" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="workTaskId">Work Task ID:</label>
+        <InputNumber id="workTaskId" @bind-Value="newWorklog.WorkTaskId" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="userId">User:</label>
+        <select id="userId" @bind="newWorklog.UserId" class="form-control">
+            <option value="">Select User</option>
+            @if (users != null)
+
+            {
+                @foreach (var user in users)
+
+                {
+                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                }
+            }
+
+            else
+
+            {
+                <option value="">Loading Users...</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Worklog</button>
+</EditForm>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger mt-3">@errorMessage</div>
+}
+
+<h3 class="mt-5">Worklog List</h3>
+
+@if (worklogs == null)
+{
+    <p>Loading worklogs...</p>
+}
+else if (!worklogs.Any())
+{
+    <p>No worklogs found.</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Hours Worked</th>
+                <th>Date Worked</th>
+                <th>Work Task ID</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var worklog in worklogs)
+            {
+                <tr>
+                    <td>@worklog.Description</td>
+                    <td>@worklog.HoursWorked</td>
+                    <td>@worklog.DateWorked.ToShortDateString()</td>
+                    <td>@worklog.WorkTaskId</td>
+                    <td>@worklog.User.FirstName @worklog.User.LastName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Worklog newWorklog = new Worklog();
+    private IEnumerable<Worklog>? worklogs;
+    private IEnumerable<User>? users;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWorklogs();
+        await LoadUsers();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await WorklogService.CreateAsync(newWorklog);
+            newWorklog = new Worklog(); 
+            await LoadWorklogs();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating worklog: {ex.Message}";
+        }
+    }
+
+    private async Task LoadWorklogs()
+    {
+        worklogs = await WorklogService.GetAllWorklogsAsync();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await UserService.GetAllUsersAsync();
+    }
+}

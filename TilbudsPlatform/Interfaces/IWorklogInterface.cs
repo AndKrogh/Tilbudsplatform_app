@@ -4,7 +4,9 @@ namespace TilbudsPlatform.Interfaces
 {
     public interface IWorklogInterface
     {
+        Task<IEnumerable<Worklog>> GetAllWorklogsAsync();
         Task<Worklog> GetByIdAsync(int id);
-        Task<IEnumerable<Worklog>> GetByProjectIdAsync(int projectId);
+        Task<IEnumerable<Worklog>> GetByWorkTaskIdAsync(int WorkTaskId);
+        Task<Worklog> CreateAsync(Worklog worklog);
     }
 }
