@@ -25,22 +25,21 @@ namespace TilbudsPlatform.Data
                 .HasOne(w => w.WorkTask)
                 .WithMany(t => t.Worklogs)
                 .HasForeignKey(w => w.WorkTaskId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Worklog>()
                 .HasOne(w => w.User)
                 .WithMany(u => u.Worklogs)
                 .HasForeignKey(w => w.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<WorkTask>()
                 .HasOne(t => t.Project)
                 .WithMany(p => p.WorkTasks)
                 .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

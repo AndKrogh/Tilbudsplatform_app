@@ -50,5 +50,10 @@ namespace TilbudsPlatform.core.Services
 
             return estimate;
         }
+
+        public Task<int?> GetEstimateByProjectIdAsync(int projectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

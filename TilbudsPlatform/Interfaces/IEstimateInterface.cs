@@ -5,5 +5,6 @@ namespace TilbudsPlatform.Interfaces
     public interface IEstimateInterface
     {
         Task<Estimate> GetByProjectIdAsync(int projectId);
+        Task<int?> GetEstimateByProjectIdAsync(int projectId);
     }
 }

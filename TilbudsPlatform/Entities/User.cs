@@ -13,5 +13,7 @@ namespace TilbudsPlatform.Entities
         public string Role { get; set; }
 
         public ICollection<Worklog> Worklogs { get; set; }
+
+        public ICollection<WorkTask> WorkTasks { get; set; }
     }
 }

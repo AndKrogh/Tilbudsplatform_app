@@ -3,71 +3,118 @@ using TilbudsPlatform.Data;
 using TilbudsPlatform.Entities;
 using TilbudsPlatform.Interfaces;
 
-namespace TilbudsPlatform.core.Services
+public class WorkTaskService : IWorkTaskInterface
 {
-    public class WorkTaskService : IWorkTaskInterface
+    private readonly TilbudsPlatformContext _context;
+
+    public WorkTaskService(TilbudsPlatformContext context)
     {
-        private readonly TilbudsPlatformContext _context;
+        _context = context;
+    }
 
-        public WorkTaskService(TilbudsPlatformContext context)
+    public async Task<IEnumerable<WorkTask>> GetAllWorkTasksAsync()
+    {
+        return await _context.WorkTasks.Include(w => w.Project).ToListAsync();
+    }
+
+    public async Task<WorkTask> CreateAsync(WorkTask workTask)
+    {
+        _context.WorkTasks.Add(workTask);
+        await _context.SaveChangesAsync();
+        return workTask;
+    }
+
+    public async Task<IEnumerable<WorkTask>> GetByProjectIdAsync(int projectId)
+    {
+        return await _context.WorkTasks
+            .Where(w => w.ProjectId == projectId)
+            .Include(w => w.Project)
+            .ToListAsync();
+    }
+
+    public async Task LogHoursAsync(int workTaskId, decimal hours, string description)
+    {
+        var workTask = await _context.WorkTasks
+            .Include(w => w.Worklogs)
+            .FirstOrDefaultAsync(w => w.Id == workTaskId);
+
+        if (workTask == null)
+            throw new ArgumentException("Work task not found.");
+
+        var worklog = new Worklog
         {
-            _context = context;
-        }
+            WorkTaskId = workTaskId,
+            HoursWorked = hours,
+            Description = description,
+            DateWorked = DateTime.UtcNow,
+            UserId = 1 // This should be dynamically set based on the current user
+        };
 
-        public async Task<IEnumerable<WorkTask>> GetAllWorkTasksAsync()
-        {
-            return await _context.WorkTasks.ToListAsync();
-        }
+        workTask.Worklogs.Add(worklog);
+        await _context.SaveChangesAsync();
+    }
 
-        public async Task<IEnumerable<WorkTask>> GetByProjectIdAsync(int projectId)
-        {
-            return await _context.WorkTasks.Where(w => w.ProjectId == projectId).Include(w => w.Project).ToListAsync();
-        }
+    public async Task UpdateLoggedHoursAsync(int worklogId, decimal newHours, string newDescription)
+    {
+        var worklog = await _context.Worklogs.FirstOrDefaultAsync(w => w.Id == worklogId);
 
-        public async Task LogHoursAsync(int workTaskId, decimal hours, string description)
-        {
-            if (hours <= 0)
-                throw new ArgumentException("Logged hours must be greater than zero.", nameof(hours));
+        if (worklog == null)
+            throw new ArgumentException("Worklog not found.");
 
-            var workTask = await _context.WorkTasks.Include(w => w.Worklogs).FirstOrDefaultAsync(w => w.Id == workTaskId);
-            if (workTask == null)
-            {
-                throw new KeyNotFoundException($"WorkTask with ID {workTaskId} not found.");
-            }
+        worklog.HoursWorked = newHours;
+        worklog.Description = newDescription;
 
-            var worklog = new Worklog
-            {
-                WorkTaskId = workTaskId,
-                HoursWorked = hours,
-                Description = description,
-                DateWorked = DateTime.Now
-            };
+        await _context.SaveChangesAsync();
+    }
 
-            _context.Worklogs.Add(worklog);
-            await _context.SaveChangesAsync();
-        }
+    public async Task<decimal> GetLoggedHoursAsync(int workTaskId)
+    {
+        var workTask = await _context.WorkTasks
+            .Include(w => w.Worklogs)
+            .FirstOrDefaultAsync(w => w.Id == workTaskId);
 
-        public async Task UpdateLoggedHoursAsync(int worklogId, decimal newHours, string newDescription)
-        {
-            if (newHours <= 0)
-                throw new ArgumentException("Updated hours must be greater than zero.", nameof(newHours));
+        if (workTask == null)
+            throw new ArgumentException("Work task not found.");
 
-            var worklog = await _context.Worklogs.FirstOrDefaultAsync(w => w.Id == worklogId);
-            if (worklog == null)
-            {
-                throw new KeyNotFoundException($"Worklog with ID {worklogId} not found.");
-            }
+        return workTask.Worklogs.Sum(wl => wl.HoursWorked);
+    }
 
-            worklog.HoursWorked = newHours;
-            worklog.Description = newDescription;
-            await _context.SaveChangesAsync();
-        }
+    public async Task<decimal> GetEstimatedHoursAsync(int projectId)
+    {
+        var project = await _context.Projects
+            .Where(p => p.Id == projectId)
+            .Include(p => p.WorkTasks)
+            .FirstOrDefaultAsync();
 
-        public async Task<WorkTask> CreateAsync(WorkTask workTask)
-        {
-            _context.WorkTasks.Add(workTask);
-            await _context.SaveChangesAsync();
-            return workTask;
-        }
+        if (project == null)
+            throw new ArgumentException("Project not found.");
+
+        return project.WorkTasks.Sum(wt => wt.DurationHours);
+    }
+
+    public async Task<string> GetUserNameAsync(int workTaskId)
+    {
+        var workTask = await _context.WorkTasks
+            .Include(w => w.Worklogs)
+            .ThenInclude(wl => wl.User)
+            .FirstOrDefaultAsync(w => w.Id == workTaskId);
+
+        if (workTask == null)
+            throw new ArgumentException("Work task not found.");
+
+        var lastWorklog = workTask.Worklogs.OrderByDescending(wl => wl.DateWorked).FirstOrDefault();
+        return lastWorklog?.User != null ? $"{lastWorklog.User.FirstName} {lastWorklog.User.LastName}" : "Unknown User";
+    }
+
+    public async Task<DateTime?> GetLastLoggedDateAsync(int workTaskId)
+    {
+        var workTask = await _context.WorkTasks
+            .Include(w => w.Worklogs)
+            .FirstOrDefaultAsync(w => w.Id == workTaskId);
+
+        if (workTask == null)
+            throw new ArgumentException("Work task not found.");
+
+        return workTask.Worklogs.OrderByDescending(wl => wl.DateWorked).FirstOrDefault()?.DateWorked;
     }
 }

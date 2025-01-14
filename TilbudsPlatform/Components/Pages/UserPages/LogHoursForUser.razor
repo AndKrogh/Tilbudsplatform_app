@@ -1,162 +1,154 @@
 @page "/log-hours"
 @inject IWorkTaskInterface WorkTaskService
+@inject IWorklogInterface WorklogService
+@inject IUserInterface UserService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Timelog</h3>
+<h3>Log Timer for Work Task</h3>
 
-<div class="mb-3">
-    <label for="workTaskId">Arbejdsopgave ID:</label>
-    <InputNumber id="workTaskId" @bind-Value="workTaskId" class="form-control" />
-</div>
+<EditForm Model="worklog" OnValidSubmit="HandleValidSubmit" FormName="logHoursForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-<div class="mb-3">
-    <label for="description">Beskrivelse:</label>
-    <InputText id="description" @bind-Value="logDescription" class="form-control" />
-</div>
+    <div>
+        <label for="workTask">Vælg Arbejdsopgave</label>
+        <InputSelect id="workTask" @bind-Value="worklog.WorkTaskId">
+            <option value="">Vælg arbejdsopgave</option>
+            @if (workTasks != null)
+            {
+                @foreach (var task in workTasks)
+                {
+                    <option value="@task.Id">@task.Title</option>
+                }
+            }
+            else
+            {
+                <option value="">Ingen arbejdsopgaver</option>
+            }
+        </InputSelect>
+    </div>
 
-<div class="mb-3">
-    <label for="hours">Timer:</label>
-    <InputNumber id="hours" @bind-Value="logHours" class="form-control" />
-</div>
+    <div>
+        <label for="user">Vælg Bruger</label>
+        <InputSelect id="user" @bind-Value="worklog.UserId">
+            <option value="">Vælg bruger</option>
+            @if (users != null)
+            {
+                @foreach (var user in users)
+                {
+                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                }
+            }
+            else
+            {
+                <option value="">Ingen brugere</option>
+            }
+        </InputSelect>
+    </div>
 
-<button class="btn btn-primary" @onclick="LogHours" disabled="@isLoading">Log Hours</button>
+    <div>
+        <label for="hours">Timer Arbejdet</label>
+        <InputNumber id="hours" @bind-Value="worklog.HoursWorked" />
+    </div>
 
-<h4 class="mt-5">Opdater Timelog</h4>
-<div class="mb-3">
-    <label for="worklogId">Arbejdslog ID:</label>
-    <InputNumber id="worklogId" @bind-Value="worklogId" class="form-control" />
-</div>
+    <div>
+        <label for="description">Beskrivelse</label>
+        <InputText id="description" @bind-Value="worklog.Description" />
+    </div>
 
-<div class="mb-3">
-    <label for="updateDescription">Ny Beskrivelse:</label>
-    <InputText id="updateDescription" @bind-Value="updateDescription" class="form-control" />
-</div>
+    <button type="submit">Log Timer</button>
+</EditForm>
 
-<div class="mb-3">
-    <label for="updateHours">Ny Timer:</label>
-    <InputNumber id="updateHours" @bind-Value="updateHours" class="form-control" />
-</div>
+<h3>Logged Work Tasks</h3>
 
-<button class="btn btn-success" @onclick="UpdateLoggedHours" disabled="@isLoading">Opdater timer</button>
-
-<h4 class="mt-5">Arbejdsopgaver for opgave ID: @workTaskId</h4>
-
-@if (isLoading)
+@if (workTaskDetails != null && workTaskDetails.Any())
 {
-    <p>Loading...</p>
-}
-else if (worklogs == null)
-{
-    <p>Enter a Work Task ID and log hours to view worklogs.</p>
-}
-else if (!worklogs.Any())
-{
-    <p>No worklogs found for this task.</p>
-}
-else
-{
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Description</th>
-                <th>Hours</th>
-                <th>Date Worked</th>
+                <th>Arbejdsopgave</th>
+                <th>Bruger</th>
+                <th>Projekt</th>
+                <th>Timer Arbejdet</th>
+                <th>Estimerede Timer</th>
+                <th>Logget Dato</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var log in worklogs)
+            @foreach (var task in workTaskDetails)
             {
                 <tr>
-                    <td>@log.Id</td>
-                    <td>@log.Description</td>
-                    <td>@log.HoursWorked</td>
-                    <td>@log.DateWorked</td>
+                    <td>@task.Title</td>
+                    <td>@task.UserName</td>
+                    <td>@task.ProjectName</td>
+                    <td>@task.HoursWorked</td>
+                    <td>@task.EstimatedHours</td>
+                    <td>@task.LastLoggedDate?.ToString("yyyy-MM-dd HH:mm:ss")</td>
                 </tr>
             }
         </tbody>
     </table>
 }
-
-@if (errorMessage != null)
+else
 {
-    <div class="alert alert-danger">@errorMessage</div>
+    <p>No work logs found for this task.</p>
 }
 
 @code {
-    private int workTaskId;
-    private decimal logHours;
-    private string logDescription = string.Empty;
+    private Worklog worklog = new Worklog();
+    private IEnumerable<WorkTask> workTasks;
+    private IEnumerable<User> users;
+    private List<WorkTaskDetails> workTaskDetails = new List<WorkTaskDetails>();
 
-    private int worklogId;
-    private decimal updateHours;
-    private string updateDescription = string.Empty;
-
-    private IEnumerable<Worklog>? worklogs;
-    private string? errorMessage;
-    private bool isLoading = false;
-
-    private async Task LogHours()
+    protected override async Task OnInitializedAsync()
     {
-        try
+        workTasks = await WorkTaskService.GetAllWorkTasksAsync();
+        users = await UserService.GetAllUsersAsync();
+        await LoadWorkTaskDetails();
+    }
+
+    private async Task LoadWorkTaskDetails()
+    {
+        workTaskDetails.Clear();
+        foreach (var task in workTasks)
         {
-            isLoading = true;
-            await WorkTaskService.LogHoursAsync(workTaskId, logHours, logDescription);
-            await LoadWorklogs();
-            logHours = 0;
-            logDescription = string.Empty;
-            errorMessage = null;
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error logging hours: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
+            var totalLoggedHours = await WorkTaskService.GetLoggedHoursAsync(task.Id);
+            var estimatedHours = await WorkTaskService.GetEstimatedHoursAsync(task.ProjectId);
+            var lastLoggedDate = await WorkTaskService.GetLastLoggedDateAsync(task.Id);
+            var userName = await WorkTaskService.GetUserNameAsync(task.Id);
+
+            workTaskDetails.Add(new WorkTaskDetails
+                {
+                    Title = task.Title,
+                    UserName = userName,
+                    ProjectName = task.Project.Name,
+                    HoursWorked = totalLoggedHours,
+                    EstimatedHours = estimatedHours,
+                    LastLoggedDate = lastLoggedDate
+                });
         }
     }
 
-    private async Task UpdateLoggedHours()
+    private async Task HandleValidSubmit()
     {
-        try
+        if (worklog.WorkTaskId == 0 || worklog.UserId == 0)
         {
-            isLoading = true;
-            await WorkTaskService.UpdateLoggedHoursAsync(worklogId, updateHours, updateDescription);
-            await LoadWorklogs();
-            updateHours = 0;
-            updateDescription = string.Empty;
-            errorMessage = null;
+            return;
         }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error updating logged hours: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+
+        await WorkTaskService.LogHoursAsync(worklog.WorkTaskId, worklog.HoursWorked, worklog.Description);
+        await LoadWorkTaskDetails();
+        NavigationManager.NavigateTo("/log-hours", true);
     }
 
-    private async Task LoadWorklogs()
+    public class WorkTaskDetails
     {
-        try
-        {
-            isLoading = true;
-
-            var workTasks = await WorkTaskService.GetByProjectIdAsync(workTaskId);
-
-            worklogs = workTasks.SelectMany(wt => wt.Worklogs).ToList();
-
-            errorMessage = null;
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error loading worklogs: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        public string Title { get; set; }
+        public string UserName { get; set; }
+        public string ProjectName { get; set; }
+        public decimal HoursWorked { get; set; }
+        public decimal EstimatedHours { get; set; }
+        public DateTime? LastLoggedDate { get; set; }
     }
 }

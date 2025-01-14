@@ -13,73 +13,32 @@
     <ValidationSummary />
 
     <div>
-        <label for="description">Beskrivelse:</label>
-        <InputText id="description" @bind-Value="newWorklog.Description" />
+        <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
+        <InputText id="newWorkTaskTitle" @bind-Value="newWorkTaskTitle" />
     </div>
 
     <div>
-        <label for="hoursWorked">Timer brugt:</label>
-        <InputNumber id="hoursWorked" @bind-Value="newWorklog.HoursWorked" />
+        <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
+        <InputText id="newWorkTaskDescription" @bind-Value="newWorkTaskDescription" />
     </div>
 
     <div>
-        <label for="dateWorked">Dato:</label>
-        <InputDate id="dateWorked" @bind-Value="newWorklog.DateWorked" />
-    </div>
-
-    <div>
-        <label for="workTaskId">Arbejdsopgave:</label>
-        <select id="workTaskId" @bind="selectedWorkTaskId">
+        <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
+        <select id="newProjectId" @bind="newProjectId">
             <option value="">Vælg</option>
-            @if (workTasks != null)
+            @if (projects != null)
             {
-                @foreach (var workTask in workTasks)
+                @foreach (var project in projects)
                 {
-                    <option value="@workTask.Id">@workTask.Title</option>
+                    <option value="@project.Id">@project.Name</option>
                 }
             }
             else
             {
-                <option value="">Loading Work Tasks...</option>
+                <option value="">Loading Projects...</option>
             }
         </select>
     </div>
-
-    <div>
-        <label for="createNewWorkTask">Eller lav ny arbejdsopgave</label>
-        <InputCheckbox id="createNewWorkTask" @bind-Value="createNewWorkTask" />
-    </div>
-
-    @if (createNewWorkTask)
-    {
-        <div>
-            <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
-            <InputText id="newWorkTaskTitle" @bind-Value="newWorkTaskTitle" />
-        </div>
-
-        <div>
-            <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
-            <InputText id="newWorkTaskDescription" @bind-Value="newWorkTaskDescription" />
-        </div>
-
-        <div>
-            <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
-            <select id="newProjectId" @bind="newProjectId">
-                <option value="">Vælg</option>
-                @if (projects != null)
-                {
-                    @foreach (var project in projects)
-                    {
-                        <option value="@project.Id">@project.Name</option>
-                    }
-                }
-                else
-                {
-                    <option value="">Loading Projects...</option>
-                }
-            </select>
-        </div>
-    }
 
     <div>
         <label for="userId">Bruger:</label>
@@ -123,8 +82,6 @@ else
         <thead>
             <tr>
                 <th>Beskrivelse</th>
-                <th>Timer brugt</th>
-                <th>Dato</th>
                 <th>Arbejdsopgave</th>
                 <th>Bruger</th>
                 <th>Projekt</th>
@@ -135,8 +92,6 @@ else
             {
                 <tr>
                     <td>@worklog.Description</td>
-                    <td>@worklog.HoursWorked</td>
-                    <td>@worklog.DateWorked.ToShortDateString()</td>
                     <td>@worklog.WorkTask.Title</td>
                     <td>@worklog.User.FirstName @worklog.User.LastName</td>
                     <td>@worklog.WorkTask.Project.Name</td>
@@ -151,7 +106,6 @@ else
     private string newWorkTaskTitle = string.Empty;
     private string newWorkTaskDescription = string.Empty;
     private int selectedWorkTaskId;
-    private bool createNewWorkTask = false;
     private int newProjectId;
     private List<Worklog>? worklogs;
     private List<User>? users;
@@ -171,33 +125,38 @@ else
     {
         try
         {
-            if (createNewWorkTask)
+            if (string.IsNullOrWhiteSpace(newWorkTaskTitle) || string.IsNullOrWhiteSpace(newWorkTaskDescription) || newProjectId == 0)
             {
-                if (string.IsNullOrWhiteSpace(newWorkTaskTitle) || string.IsNullOrWhiteSpace(newWorkTaskDescription) || newProjectId == 0)
-                {
-                    errorMessage = "All fields for new work task must be filled out.";
-                    return;
-                }
+                errorMessage = "All fields for new work task must be filled out.";
+                return;
+            }
 
-                var newWorkTask = new WorkTask
+            WorkTask newWorkTask = null;
+
+            if (selectedWorkTaskId == 0)
+            {
+                newWorkTask = new WorkTask
                     {
                         Title = newWorkTaskTitle,
                         Description = newWorkTaskDescription,
                         ProjectId = newProjectId
                     };
-
                 await WorkTaskService.CreateAsync(newWorkTask);
-                newWorklog.WorkTaskId = newWorkTask.Id;
             }
             else
             {
-                if (selectedWorkTaskId == 0)
-                {
-                    errorMessage = "Work Task is required.";
-                    return;
-                }
-                newWorklog.WorkTaskId = selectedWorkTaskId;
+                newWorkTask = workTasks?.FirstOrDefault(wt => wt.Id == selectedWorkTaskId);
             }
+
+            if (newWorkTask == null)
+            {
+                errorMessage = "Work task is required.";
+                return;
+            }
+
+            newWorklog.WorkTaskId = newWorkTask.Id;
+            newWorklog.Description = newWorkTaskDescription;
+            newWorklog.UserId = newWorklog.UserId;
 
             if (newWorklog.UserId == 0)
             {
@@ -210,7 +169,7 @@ else
             newWorkTaskTitle = string.Empty;
             newWorkTaskDescription = string.Empty;
             selectedWorkTaskId = 0;
-            createNewWorkTask = false;
+            newProjectId = 0;
             await LoadWorklogs();
         }
         catch (Exception ex)

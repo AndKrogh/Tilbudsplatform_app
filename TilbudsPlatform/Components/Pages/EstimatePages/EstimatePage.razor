@@ -1,48 +1,119 @@
 @page "/estimate/{projectId:int}"
 @inject IEstimateInterface EstimateService
 @inject IProjectInterface ProjectService
+@inject IWorklogInterface WorklogService
+@inject IWorkTaskInterface WorkTaskService
+@inject NavigationManager NavigationManager
 
 <h3>Samlede omkostninger</h3>
 
+<button @onclick="GoBack" class="btn btn-secondary">Tilbage til projekt</button>
+
 @if (estimate != null && project != null)
 {
-    <div>
-        <h4>Estimate Details</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Projekt ID</th>
-                    <th>Projekt Navn</th>
-                    <th>Estimeret Timer</th>
-                    <th>Timepris</th>
-                    <th>Samlede Omkostninger</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>@estimate.ProjectId</td>
-                    <td>@project.Name</td>
-                    <td>@estimate.EstimatedHours</td>
-                    <td>@estimate.HourlyRate</td>
-                    <td>@estimate.TotalCost</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div>
+            <h4>Estimat detaljer</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Projekt ID</th>
+                        <th>Projekt Navn</th>
+                        <th>Estimeret Timer</th>
+                        <th>Timepris</th>
+                        <th>Samlede Omkostninger</th>
+                        <th>Profitmargin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@estimate.ProjectId</td>
+                        <td>@project.Name</td>
+                        <td>@estimate.EstimatedHours</td>
+                        <td>@estimate.HourlyRate</td>
+                        <td>@estimate.TotalCost</td>
+                        <td>@project.ProfitMargin</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4>Arbejdslogs for @project.Name</h4>
+    @if (worklogs != null && worklogs.Any())
+    {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Worklog ID</th>
+                            <th>Arbejdsopgave</th>
+                            <th>Bruger</th>
+                            <th>Timer</th>
+                            <th>Pris</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                @foreach (var worklog in worklogs)
+                {
+                                <tr>
+                                    <td>@worklog.Id</td>
+                                    <td>@worklog.WorkTask.Title</td>
+                                    <td>@worklog.User.FirstName @worklog.User.LastName</td>
+                                    <td>@worklog.WorkTask.DurationHours</td>
+                                    <td>@(worklog.WorkTask.DurationHours * estimate.HourlyRate)</td>
+                                </tr>
+                }
+                    </tbody>
+                </table>
+    }
+    else
+    {
+                <p>Ingen arbejdslogs fundet for dette projekt.</p>
+    }
+
+        <h4>Arbejdsopgaver for @project.Name</h4>
+    @if (workTasks != null && workTasks.Any())
+    {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Arbejdsopgave ID</th>
+                            <th>Titel</th>
+                            <th>Beskrivelse</th>
+                            <th>Estimerede Timer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                @foreach (var worktask in workTasks)
+                {
+                                <tr>
+                                    <td>@worktask.Id</td>
+                                    <td>@worktask.Title</td>
+                                    <td>@worktask.Description</td>
+                                    <td>@worktask.DurationHours</td>
+                                </tr>
+                }
+                    </tbody>
+                </table>
+    }
+    else
+    {
+                <p>Ingen arbejdsopgaver fundet for dette projekt.</p>
+    }
 }
 else if (errorMessage != null)
 {
-    <p style="color: red;">@errorMessage</p>
+        <p style="color: red;">@errorMessage</p>
 }
 else
 {
-    <p>Loading...</p>
+        <p>Indlæser...</p>
 }
 
 @code {
     [Parameter] public int ProjectId { get; set; }
     private Project project;
     private Estimate estimate;
+    private List<Worklog> worklogs;
+    private List<WorkTask> workTasks;
     private string errorMessage;
 
     protected override async Task OnParametersSetAsync()
@@ -51,11 +122,19 @@ else
         {
             estimate = await EstimateService.GetByProjectIdAsync(ProjectId);
             project = await ProjectService.GetProjectByIdAsync(ProjectId);
+            worklogs = (await WorklogService.GetByWorkTaskIdAsync(ProjectId)).ToList();
+            workTasks = (await WorkTaskService.GetByProjectIdAsync(ProjectId)).ToList();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";
-            Console.WriteLine($"Error: {ex.Message}");
+            errorMessage = $"Fejl: {ex.Message}";
+            Console.WriteLine($"Fejl: {ex.Message}");
         }
     }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/project/{ProjectId}");
+    }
 }
+
