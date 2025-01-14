@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TilbudsPlatform.core.Interfaces;
 using TilbudsPlatform.Data;
 using TilbudsPlatform.Entities;
-using TilbudsPlatform.Interfaces;
 
 public class WorkTaskService : IWorkTaskInterface
 {

@@ -1,0 +1,200 @@
+@page "/Create-worklogs"
+@inject IWorklogInterface WorklogService
+@inject IWorkTaskInterface WorkTaskService
+@inject IUserInterface UserService
+@inject IProjectInterface ProjectService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Opret ny arbejdslog</h3>
+
+<EditForm Model="newWorklog" OnValidSubmit="HandleCreateWorklog">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
+        <InputText id="newWorkTaskTitle" @bind-Value="newWorkTaskTitle" />
+    </div>
+
+    <div>
+        <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
+        <InputText id="newWorkTaskDescription" @bind-Value="newWorkTaskDescription" />
+    </div>
+
+    <div>
+        <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
+        <select id="newProjectId" @bind="newProjectId">
+            <option value="">Vælg</option>
+            @if (projects != null)
+            {
+                @foreach (var project in projects)
+                {
+                    <option value="@project.Id">@project.Name</option>
+                }
+            }
+            else
+            {
+                <option value="">Loading Projects...</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label for="userId">Bruger:</label>
+        <select id="userId" @bind="newWorklog.UserId">
+            <option value="">Vælg bruger</option>
+            @if (users != null)
+            {
+                @foreach (var user in users)
+                {
+                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                }
+            }
+            else
+            {
+                <option value="">Loading Users...</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Opret arbejdslog</button>
+</EditForm>
+
+@if (errorMessage != null)
+{
+    <div>@errorMessage</div>
+}
+
+<h3>Arbejdslogs</h3>
+
+@if (worklogs == null)
+{
+    <p>Loading worklogs...</p>
+}
+else if (!worklogs.Any())
+{
+    <p>No worklogs found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Beskrivelse</th>
+                <th>Arbejdsopgave</th>
+                <th>Bruger</th>
+                <th>Projekt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var worklog in worklogs)
+            {
+                <tr>
+                    <td>@worklog.Description</td>
+                    <td>@worklog.WorkTask.Title</td>
+                    <td>@worklog.User.FirstName @worklog.User.LastName</td>
+                    <td>@worklog.WorkTask.Project.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Worklog newWorklog = new Worklog();
+    private string newWorkTaskTitle = string.Empty;
+    private string newWorkTaskDescription = string.Empty;
+    private int selectedWorkTaskId;
+    private int newProjectId;
+    private List<Worklog>? worklogs;
+    private List<User>? users;
+    private List<WorkTask>? workTasks;
+    private List<Project>? projects;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWorklogs();
+        await LoadUsers();
+        await LoadWorkTasks();
+        await LoadProjects();
+    }
+
+    private async Task HandleCreateWorklog()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(newWorkTaskTitle) || string.IsNullOrWhiteSpace(newWorkTaskDescription) || newProjectId == 0)
+            {
+                errorMessage = "All fields for new work task must be filled out.";
+                return;
+            }
+
+            WorkTask newWorkTask = null;
+
+            if (selectedWorkTaskId == 0)
+            {
+                newWorkTask = new WorkTask
+                    {
+                        Title = newWorkTaskTitle,
+                        Description = newWorkTaskDescription,
+                        ProjectId = newProjectId
+                    };
+                await WorkTaskService.CreateAsync(newWorkTask);
+            }
+            else
+            {
+                newWorkTask = workTasks?.FirstOrDefault(wt => wt.Id == selectedWorkTaskId);
+            }
+
+            if (newWorkTask == null)
+            {
+                errorMessage = "Work task is required.";
+                return;
+            }
+
+            newWorklog.WorkTaskId = newWorkTask.Id;
+            newWorklog.Description = newWorkTaskDescription;
+            newWorklog.UserId = newWorklog.UserId;
+
+            if (newWorklog.UserId == 0)
+            {
+                errorMessage = "User is required.";
+                return;
+            }
+
+            await WorklogService.CreateAsync(newWorklog);
+            newWorklog = new Worklog();
+            newWorkTaskTitle = string.Empty;
+            newWorkTaskDescription = string.Empty;
+            selectedWorkTaskId = 0;
+            newProjectId = 0;
+            await LoadWorklogs();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating worklog: {ex.Message}";
+        }
+    }
+
+    private async Task LoadWorklogs()
+    {
+        worklogs = (await WorklogService.GetAllWorklogsAsync()).ToList();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = (await UserService.GetAllUsersAsync()).ToList();
+    }
+
+    private async Task LoadWorkTasks()
+    {
+        workTasks = (await WorkTaskService.GetAllWorkTasksAsync()).ToList();
+    }
+
+    private async Task LoadProjects()
+    {
+        projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+    }
+}

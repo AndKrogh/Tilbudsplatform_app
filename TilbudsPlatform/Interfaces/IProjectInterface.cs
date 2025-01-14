@@ -1,6 +1,6 @@
 using TilbudsPlatform.Model;
 
-namespace TilbudsPlatform.Interfaces
+namespace TilbudsPlatform.core.Interfaces
 {
     public interface IProjectInterface
     {

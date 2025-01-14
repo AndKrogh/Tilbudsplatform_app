@@ -1,0 +1,227 @@
+@page "/project"
+@inject IProjectInterface ProjectService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@using DocumentFormat.OpenXml;
+@using DocumentFormat.OpenXml.Packaging;
+@using DocumentFormat.OpenXml.Spreadsheet;
+@inject IJSRuntime js
+
+<HeadContent>
+    <script type="text/javascript" src="js/DownloadExcelFile.js"></script>
+</HeadContent>
+
+<h3>Projekter</h3>
+
+<div>
+    <h4>Opret nyt projekt</h4>
+    <EditForm Model="newProject" OnValidSubmit="CreateProject">
+        <div>
+            <label>Projekt Navn:</label>
+            <input type="text" @bind="newProject.Name" />
+        </div>
+        <div>
+            <label>Beskrivelse:</label>
+            <input type="text" @bind="newProject.Description" />
+        </div>
+        <div>
+            <label>Start Dato:</label>
+            <input type="date" @bind="newProject.StartDate" />
+        </div>
+        <div>
+            <label>Slut Dato:</label>
+            <input type="date" @bind="newProject.EndDate" />
+        </div>
+        <div>
+            <label>Estimeret Timer:</label>
+            <input type="number" @bind="newProject.EstimatedHours" />
+        </div>
+        <div>
+            <label>Timepris:</label>
+            <input type="number" @bind="newProject.HourlyRate" />
+        </div>
+        <div>
+            <label>Overskudsgrad:</label>
+            <input type="number" @bind="newProject.ProfitMargin" />
+        </div>
+        <div>
+            <label>Kunde ID:</label>
+            <input type="number" @bind="newProject.CustomerId" />
+        </div>
+        <button class="btn btn-primary" type="submit">Opret</button>
+    </EditForm>
+</div>
+
+<hr />
+
+<div>
+    <h4>Projektliste</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Projekt ID</th>
+                <th>Navn</th>
+                <th>Start Dato</th>
+                <th>Slut Dato</th>
+                <th>Kunde</th>
+                <th>Handlinger</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (projects.Any())
+            {
+                @foreach (var project in projects)
+                {
+                    <tr>
+                        <td>@project.Id</td>
+                        <td>@project.Name</td>
+                        <td>@project.StartDate.ToShortDateString()</td>
+                        <td>@project.EndDate.ToShortDateString()</td>
+                        <td>@project.Customer?.Name</td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Slet</button>
+                            <button class="btn btn-primary" @onclick="() => NavigateToEstimate(project.Id)">Estimat</button>
+                            <button class="btn btn-primary" onclick="() => ExportToExcel">Eksporter som excel</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">No projects available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private Project newProject = new Project
+        {
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today
+        };
+    private List<Project> projects = new List<Project>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+    }
+
+    private async Task CreateProject()
+    {
+        try
+        {
+            await ProjectService.CreateProjectAsync(newProject);
+            projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+            newProject = new Project { StartDate = DateTime.Today, EndDate = DateTime.Today };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteProject(int id)
+    {
+        try
+        {
+            await ProjectService.DeleteProjectAsync(id);
+            projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private void NavigateToEstimate(int projectId)
+    {
+        NavigationManager.NavigateTo($"/estimate/{projectId}");
+    }
+
+    private async Task ExportToExcel()
+    {
+        MemoryStream ms = new MemoryStream();
+
+        // Create a spreadsheet document by supplying the filepath.
+        // By default, AutoSave = true, Editable = true, and Type = xlsx.
+        SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(ms, SpreadsheetDocumentType.Workbook);
+
+        // Add a WorkbookPart to the document.
+        WorkbookPart workbookPart = spreadsheetDocument.AddWorkbookPart();
+        workbookPart.Workbook = new Workbook();
+
+        // Add a WorksheetPart to the WorkbookPart.
+        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+        var sheetData = new SheetData();
+        worksheetPart.Worksheet = new Worksheet(sheetData);
+
+        //add header row
+        Row headerRow = new Row();
+        string[] headerNames = { "Projekt ID", "Navn", "Start Dato", "Slut Dato", "Kunde" };
+        Cell[] headerCells = new Cell[headerNames.Length];
+
+        for(var i = 0; i<headerNames.Length; i++)
+        {
+            headerCells[i] = new Cell();
+            headerCells[i].DataType = CellValues.String;
+            headerCells[i].CellValue = new CellValue(headerNames[i]);
+            headerRow.Append(headerCells[i]);
+        }
+        sheetData.Append(headerRow);
+
+        //add data row
+        Row dataRow;
+        Cell[] dataCells;
+
+        foreach (var project in projects)
+        {
+            dataRow = new Row();
+            dataCells = new Cell[5];
+
+            dataCells[0] = new Cell();
+            dataCells[0].DataType = CellValues.String;
+            dataCells[0].CellValue = new CellValue(project.Id);
+            dataRow.Append(dataCells[0]);
+
+            dataCells[1] = new Cell();
+            dataCells[1].DataType = CellValues.String;
+            dataCells[1].CellValue = new CellValue(project.Name);
+            dataRow.Append(dataCells[1]);
+
+            dataCells[2] = new Cell();
+            dataCells[2].DataType = CellValues.String;
+            dataCells[2].CellValue = new CellValue(project.StartDate);
+            dataRow.Append(dataCells[2]);
+
+            dataCells[3] = new Cell();
+            dataCells[3].DataType = CellValues.String;
+            dataCells[3].CellValue = new CellValue(project.EndDate);
+            dataRow.Append(dataCells[3]);
+
+            dataCells[4] = new Cell();
+            dataCells[4].DataType = CellValues.String;
+            dataCells[4].CellValue = new CellValue(project.Customer.Name);
+            dataRow.Append(dataCells[4]);
+
+            sheetData.Append(dataRow);
+        }
+
+        // Add Sheets to the Workbook.
+        Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+        // Append a new worksheet and associate it with the workbook.
+        Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "mySheet" };
+        sheets.Append(sheet);
+
+        workbookPart.Workbook.Save();
+        spreadsheetDocument.Save();
+
+        // Dispose the document.
+        spreadsheetDocument.Dispose();
+
+        await js.InvokeVoidAsync("downloadFile", "Kalkulation.xlsx", Convert.ToBase64String(ms.ToArray()));
+    }
+}

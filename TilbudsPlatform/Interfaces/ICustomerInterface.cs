@@ -1,6 +1,6 @@
-using TilbudsPlatform.Entities;
+using TilbudsPlatform.core.Entities;
 
-namespace TilbudsPlatform.Interfaces
+namespace TilbudsPlatform.core.Interfaces
 {
     public interface ICustomerInterface
     {

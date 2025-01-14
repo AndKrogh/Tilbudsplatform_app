@@ -1,0 +1,120 @@
+@page "/log-hours"
+@inject IWorkTaskInterface WorkTaskService
+@inject IUserInterface UserService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Log Timer for Work Task</h3>
+
+<EditForm Model="worklog" OnValidSubmit="HandleValidSubmit" FormName="logHoursForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="workTask">Vælg Arbejdsopgave</label>
+        <InputSelect id="workTask" @bind-Value="worklog.WorkTaskId">
+            <option value="">Vælg arbejdsopgave</option>
+            @if (workTasks != null)
+            {
+                @foreach (var task in workTasks)
+                {
+                    <option value="@task.Id">@task.Title</option>
+                }
+            }
+            else
+            {
+                <option value="">Ingen arbejdsopgaver</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div>
+        <label for="user">Vælg Bruger</label>
+        <InputSelect id="user" @bind-Value="worklog.UserId">
+            <option value="">Vælg bruger</option>
+            @if (users != null)
+            {
+                @foreach (var user in users)
+                {
+                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                }
+            }
+            else
+            {
+                <option value="">Ingen brugere</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div>
+        <label for="hours">Timer Arbejdet</label>
+        <InputNumber id="hours" @bind-Value="worklog.HoursWorked" />
+    </div>
+
+    <div>
+        <label for="description">Beskrivelse</label>
+        <InputText id="description" @bind-Value="worklog.Description" />
+    </div>
+
+    <button type="submit">Log Timer</button>
+</EditForm>
+
+<h3>Logged Work Tasks</h3>
+
+@if (workTasks != null && workTasks.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Arbejdsopgave</th>
+                <th>Bruger</th>
+                <th>Projekt</th>
+                <th>Timer Arbejdet</th>
+                <th>Estimerede Timer</th>
+                <th>Logget Dato</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in workTasks)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.LastLoggedUserName</td>
+                    <td>@task.Project.Name</td>
+                    <td>@task.TotalLoggedHours</td>
+                    <td>@task.DurationHours</td>
+                    <td>@task.LastLoggedDate?.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No work logs found for this task.</p>
+}
+
+@code {
+    private Worklog worklog = new Worklog();
+    private IEnumerable<WorkTask> workTasks;
+    private IEnumerable<User> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        workTasks = await WorkTaskService.GetAllWorkTasksAsync();
+        users = await UserService.GetAllUsersAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (worklog.WorkTaskId == 0 || worklog.UserId == 0)
+        {
+            return;
+        }
+
+        await WorkTaskService.LogHoursAsync(worklog.WorkTaskId, worklog.HoursWorked, worklog.Description, worklog.UserId);
+
+        workTasks = await WorkTaskService.GetAllWorkTasksAsync();
+        NavigationManager.NavigateTo("/log-hours", true);
+    }
+}

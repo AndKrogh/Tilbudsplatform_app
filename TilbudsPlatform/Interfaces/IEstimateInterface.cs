@@ -1,6 +1,6 @@
 using TilbudsPlatform.Entities;
 
-namespace TilbudsPlatform.Interfaces
+namespace TilbudsPlatform.core.Interfaces
 {
     public interface IEstimateInterface
     {

@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TilbudsPlatform.core.Components;
+using TilbudsPlatform.core.Interfaces;
 using TilbudsPlatform.core.Services;
 using TilbudsPlatform.Data;
-using TilbudsPlatform.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TilbudsPlatformContext>(options =>

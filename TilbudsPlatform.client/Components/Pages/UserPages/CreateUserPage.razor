@@ -1,0 +1,104 @@
+@page "/create-user"
+@inject IUserInterface UserService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Opret ny bruger</h3>
+
+<EditForm Model="newUser" OnValidSubmit="HandleCreateUser" FormName="CreateUserForm">
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="firstName">Fornavn:</label>
+        <InputText id="firstName" @bind-Value="newUser.FirstName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName">Efternavn:</label>
+        <InputText id="lastName" @bind-Value="newUser.LastName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="newUser.Email" type="email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="role">Rolle:</label>
+        <InputText id="role" @bind-Value="newUser.Role" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Opret</button>
+</EditForm>
+
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger mt-3">@errorMessage</div>
+}
+
+<h3 class="mt-5">Brugerliste</h3>
+
+@if (users == null)
+{
+    <p>Loading users...</p>
+}
+else if (!users.Any())
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fornavn</th>
+                <th>Efternavn</th>
+                <th>Email</th>
+                <th>Rolle</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Role</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private User newUser = new User();
+    private string? errorMessage;
+    private List<User>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task HandleCreateUser()
+    {
+        try
+        {
+            Console.WriteLine($"FirstName: {newUser.FirstName}, LastName: {newUser.LastName}, Email: {newUser.Email}, Role: {newUser.Role}");
+            await UserService.CreateUserAsync(newUser);
+            newUser = new User();
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating user: {ex.Message}";
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        users = (await UserService.GetAllUsersAsync()).ToList();
+    }
+}

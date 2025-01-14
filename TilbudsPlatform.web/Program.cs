@@ -1,6 +1,12 @@
+using TilbudsPlatform.core.Interfaces;
+using TilbudsPlatform.core.Services;
 using TilbudsPlatform.web.Components;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

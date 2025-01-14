@@ -1,6 +1,6 @@
 using TilbudsPlatform.Model;
 
-namespace TilbudsPlatform.Entities
+namespace TilbudsPlatform.core.Entities
 {
     public class Customer
     {
