@@ -1,3 +1,4 @@
+using TilbudsPlatform.core.Entities;
 using TilbudsPlatform.Entities;
 
 namespace TilbudsPlatform.Model

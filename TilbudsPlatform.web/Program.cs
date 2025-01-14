@@ -1,16 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using TilbudsPlatform.core.Data;
 using TilbudsPlatform.core.Interfaces;
 using TilbudsPlatform.core.Services;
 using TilbudsPlatform.web.Components;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddScoped<ICustomerInterface, CustomerService>();
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TilbudsPlatformContext")));
+
+builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 
 var app = builder.Build();
 
@@ -30,4 +35,5 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapControllers();
 app.Run();

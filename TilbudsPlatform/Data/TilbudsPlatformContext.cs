@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using TilbudsPlatform.core.Entities;
 using TilbudsPlatform.Entities;
 using TilbudsPlatform.Model;
 
-namespace TilbudsPlatform.Data
+namespace TilbudsPlatform.core.Data
 {
     public class TilbudsPlatformContext : DbContext
     {

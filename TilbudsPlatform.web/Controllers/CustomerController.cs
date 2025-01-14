@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using TilbudsPlatform.core.Entities;
 using TilbudsPlatform.core.Interfaces;
 
 namespace TilbudsPlatform.web.Controllers
@@ -16,10 +15,10 @@ namespace TilbudsPlatform.web.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Customer>> GetCustomers()
+        public async Task<IActionResult> GetCustomers()
         {
-            return await _customerService.GetAllAsync();
-
+            var customers = await _customerService.GetAllAsync();
+            return Ok(customers);
         }
     }
 }

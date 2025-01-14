@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TilbudsPlatform.core.Data;
+using TilbudsPlatform.core.Entities;
 using TilbudsPlatform.core.Interfaces;
-using TilbudsPlatform.Data;
-using TilbudsPlatform.Entities;
 
 namespace TilbudsPlatform.core.Services
 {
