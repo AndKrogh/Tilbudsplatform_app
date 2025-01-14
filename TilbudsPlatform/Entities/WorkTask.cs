@@ -11,5 +11,8 @@ namespace TilbudsPlatform.Entities
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public ICollection<Worklog> Worklogs { get; set; }
+        public decimal TotalLoggedHours { get; set; }
+        public DateTime? LastLoggedDate { get; set; }
+        public string LastLoggedUserName { get; set; }
     }
 }

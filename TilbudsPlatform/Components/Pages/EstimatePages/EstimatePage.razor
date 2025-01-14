@@ -37,38 +37,6 @@
             </table>
         </div>
 
-        <h4>Arbejdslogs for @project.Name</h4>
-    @if (worklogs != null && worklogs.Any())
-    {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Worklog ID</th>
-                            <th>Arbejdsopgave</th>
-                            <th>Bruger</th>
-                            <th>Timer</th>
-                            <th>Pris</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                @foreach (var worklog in worklogs)
-                {
-                                <tr>
-                                    <td>@worklog.Id</td>
-                                    <td>@worklog.WorkTask.Title</td>
-                                    <td>@worklog.User.FirstName @worklog.User.LastName</td>
-                                    <td>@worklog.WorkTask.DurationHours</td>
-                                    <td>@(worklog.WorkTask.DurationHours * estimate.HourlyRate)</td>
-                                </tr>
-                }
-                    </tbody>
-                </table>
-    }
-    else
-    {
-                <p>Ingen arbejdslogs fundet for dette projekt.</p>
-    }
-
         <h4>Arbejdsopgaver for @project.Name</h4>
     @if (workTasks != null && workTasks.Any())
     {
@@ -88,7 +56,7 @@
                                     <td>@worktask.Id</td>
                                     <td>@worktask.Title</td>
                                     <td>@worktask.Description</td>
-                                    <td>@worktask.DurationHours</td>
+                                    <td>@worktask.Worklogs</td>
                                 </tr>
                 }
                     </tbody>
@@ -112,7 +80,6 @@ else
     [Parameter] public int ProjectId { get; set; }
     private Project project;
     private Estimate estimate;
-    private List<Worklog> worklogs;
     private List<WorkTask> workTasks;
     private string errorMessage;
 
@@ -122,7 +89,6 @@ else
         {
             estimate = await EstimateService.GetByProjectIdAsync(ProjectId);
             project = await ProjectService.GetProjectByIdAsync(ProjectId);
-            worklogs = (await WorklogService.GetByWorkTaskIdAsync(ProjectId)).ToList();
             workTasks = (await WorkTaskService.GetByProjectIdAsync(ProjectId)).ToList();
         }
         catch (Exception ex)
@@ -134,7 +100,7 @@ else
 
     private void GoBack()
     {
-        NavigationManager.NavigateTo($"/project/{ProjectId}");
+        NavigationManager.NavigateTo($"/project/");
     }
 }
 
