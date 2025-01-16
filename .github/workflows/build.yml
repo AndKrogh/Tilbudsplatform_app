@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8' 
+          dotnet-version: '8'
 
       - name: Install dotnet format
         run: dotnet tool install --global dotnet-format
@@ -33,7 +33,7 @@ jobs:
         run: dotnet format TilbudsPlatform/TilbudsPlatform.core.csproj --verify-no-changes --verbosity diagnostic > format-output.log
 
       - name: Run dotnet format on solution (.sln)
-        run: dotnet format TilbudsPlatform/TilbudsPlatform.sln --verify-no-changes --verbosity diagnostic > format-output-sln.log 
+        run: dotnet format TilbudsPlatform/TilbudsPlatform.sln --verify-no-changes --verbosity diagnostic > format-output-sln.log
 
       - name: Fail on unformatted code
         if: failure()
@@ -45,17 +45,26 @@ jobs:
           find . -type d -name 'bin' -exec rm -rf {} +
 
       - name: Run Unit Tests and Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity normal --logger "trx;LogFileName=./test-results.trx"
+        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=./test-results.trx"
+
+      - name: Check if test-results.trx exists
+        run: |
+          if [ -f ./test-results.trx ]; then
+            echo "Test results file found."
+          else
+            echo "No test results file found."
+            exit 1
+          fi
 
       - name: Upload Test Results as Artifact
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: test-results.trx
-          
+          path: ./test-results.trx
+
       - name: Show Test Results
         if: success() || failure()
         run: |
           echo "Test results:"
-          cat test-results.trx
+          cat ./test-results.trx
