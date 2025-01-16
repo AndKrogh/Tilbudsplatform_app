@@ -45,7 +45,7 @@ jobs:
           find . -type d -name 'bin' -exec rm -rf {} +
 
       - name: Run Unit Tests and Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity normal --logger "trx;LogFileName=./test-results.trx"
 
       - name: Upload Test Results as Artifact
         if: success() || failure()
