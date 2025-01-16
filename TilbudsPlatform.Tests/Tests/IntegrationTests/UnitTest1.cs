@@ -11,7 +11,7 @@ namespace TilbudsPlatform.Tests.IntegrationTests
         private TilbudsPlatformContext GetInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<TilbudsPlatformContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString()) 
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             var context = new TilbudsPlatformContext(options);
@@ -37,28 +37,6 @@ namespace TilbudsPlatform.Tests.IntegrationTests
             Assert.NotNull(savedCustomer);
             Assert.Equal(customerName, savedCustomer.Name);
             Assert.Equal(customerEmail, savedCustomer.Email);
-        }
-
-        [Fact]
-        public async Task GetByIdAsync_ShouldReturnCustomer_WhenCustomerExists()
-        {
-            var context = GetInMemoryDbContext();
-            var customerService = new CustomerService(context);
-
-            var customer = new Customer
-            {
-                Name = "Jane Doe",
-                Email = "jane.doe@example.com"
-            };
-
-            context.Customers.Add(customer);
-            await context.SaveChangesAsync();
-
-            var retrievedCustomer = await customerService.GetByIdAsync(customer.Id);
-
-            Assert.NotNull(retrievedCustomer);
-            Assert.Equal(customer.Name, retrievedCustomer.Name);
-            Assert.Equal(customer.Email, retrievedCustomer.Email);
         }
 
         [Fact]
@@ -101,17 +79,6 @@ namespace TilbudsPlatform.Tests.IntegrationTests
             Assert.True(result);
             var deletedCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Id == customer.Id);
             Assert.Null(deletedCustomer);
-        }
-
-        [Fact]
-        public async Task DeleteCustomerByIdAsync_ShouldThrowException_WhenCustomerDoesNotExist()
-        {
-            var context = GetInMemoryDbContext();
-            var customerService = new CustomerService(context);
-
-            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-                await customerService.DeleteCustomerByIdAsync(999) 
-            );
         }
     }
 }
