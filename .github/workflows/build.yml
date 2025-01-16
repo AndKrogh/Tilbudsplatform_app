@@ -63,3 +63,37 @@ jobs:
         run: |
           echo "Test results:"
           cat TilbudsPlatform.Tests/TestResults/test-results.trx
+
+      - name: Build Docker Image
+        run: |
+          docker build -t my-image:${{ github.sha }} .
+
+      - name: Push Docker Image to Local Docker Server
+        if: success()  
+        env:
+          DOCKER_SERVER_IP: ${{ secrets.DOCKER_SERVER_IP }} 
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login $DOCKER_SERVER_IP --username $DOCKER_USERNAME --password-stdin
+
+          
+          docker tag my-image:${{ github.sha }} $DOCKER_SERVER_IP:5000/my-image:${{ github.sha }}
+
+          
+          docker push $DOCKER_SERVER_IP:5000/my-image:${{ github.sha }}
+
+      
+      - name: Tag and Push Latest to Local Docker Server (optional)
+        if: success()
+        env:
+          DOCKER_SERVER_IP: ${{ secrets.DOCKER_SERVER_IP }}  
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          
+          docker tag my-image:${{ github.sha }} $DOCKER_SERVER_IP:5000/my-image:latest
+
+          
+          echo $DOCKER_PASSWORD | docker login $DOCKER_SERVER_IP --username $DOCKER_USERNAME --password-stdin
+          docker push $DOCKER_SERVER_IP:5000/my-image:latest
