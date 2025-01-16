@@ -44,8 +44,5 @@ jobs:
           find . -type d -name 'obj' -exec rm -rf {} +
           find . -type d -name 'bin' -exec rm -rf {} +
 
-      - name: Run Unit Tests
-        run: dotnet test TilbudsPlatform.Tests/Tests/UnitTests/UnitTests.csproj --no-build --verbosity detailed
-
-      - name: Run Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/Tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity detailed
+      - name: Run Unit Tests And Integration Tests
+        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed
