@@ -1,0 +1,40 @@
+name: CI build
+
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8' 
+
+      - name: Install dotnet format
+        run: dotnet tool install --global dotnet-format
+
+      - name: Setup PATH for .NET tools
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Run dotnet format
+        run: dotnet format EC-Billing/EC-Billing.csproj --verify-no-changes --verbosity diagnostic > format-output.log
+
+      - name: Run dotnet format on solution (.sln)
+        run: dotnet format demo.sln --verify-no-changes --verbosity diagnostic > format-output-sln.log 
+
+      - name: Fail on unformatted code
+        if: failure()
+        run: echo "Code formatting issues found. Please run 'dotnet format' locally and commit the changes."
