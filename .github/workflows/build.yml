@@ -45,11 +45,11 @@ jobs:
           find . -type d -name 'bin' -exec rm -rf {} +
 
       - name: Run Unit Tests and Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=$(System.ArtifactsDirectory)/test-results.trx"
+        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=TilbudsPlatform.Tests/TestResults/test-results.trx"
 
       - name: Check if test-results.trx exists
         run: |
-          if [ -f $(System.ArtifactsDirectory)/test-results.trx ]; then
+          if [ -f TilbudsPlatform.Tests/TestResults/test-results.trx ]; then
             echo "Test results file found."
           else
             echo "No test results file found."
@@ -61,10 +61,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: $(System.ArtifactsDirectory)/test-results.trx
+          path: TilbudsPlatform.Tests/TestResults/test-results.trx
 
       - name: Show Test Results
         if: success() || failure()
         run: |
           echo "Test results:"
-          cat $(System.ArtifactsDirectory)/test-results.trx
+          cat TilbudsPlatform.Tests/TestResults/test-results.trx
