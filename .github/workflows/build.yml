@@ -40,7 +40,7 @@ jobs:
         run: echo "Code formatting issues found. Please run 'dotnet format' locally and commit the changes."
 
       - name: Run Unit Tests and Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=TilbudsPlatform.Tests/TestResults/test-results.trx"
+        run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --logger "trx;LogFileName=test-results.trx"
 
       - name: Check if test-results.trx exists
         run: |
