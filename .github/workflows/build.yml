@@ -38,3 +38,9 @@ jobs:
       - name: Fail on unformatted code
         if: failure()
         run: echo "Code formatting issues found. Please run 'dotnet format' locally and commit the changes."
+
+      - name: Run Unit Tests
+        run: dotnet test Tests/UnitTests/UnitTests.csproj --no-build --verbosity normal
+
+      - name: Run Integration Tests
+        run: dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity normal
