@@ -45,7 +45,7 @@ jobs:
           find . -type d -name 'bin' -exec rm -rf {} +
 
       - name: Run Unit Tests
-        run: dotnet test TilbudsPlatform.Tests/Tests/UnitTests/UnitTests.csproj --no-build --verbosity diagnostic
+        run: dotnet test TilbudsPlatform.Tests/Tests/UnitTests/UnitTests.csproj --no-build --verbosity detailed
 
       - name: Run Integration Tests
-        run: dotnet test TilbudsPlatform.Tests/Tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity diagnostic
+        run: dotnet test TilbudsPlatform.Tests/Tests/IntegrationTests/IntegrationTests.csproj --no-build --verbosity detailed
