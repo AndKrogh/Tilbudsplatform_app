@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TilbudsPlatform.core.Data;
 
@@ -11,9 +12,11 @@ using TilbudsPlatform.core.Data;
 namespace TilbudsPlatform.Migrations
 {
     [DbContext(typeof(TilbudsPlatformContext))]
-    partial class TilbudsPlatformContextModelSnapshot : ModelSnapshot
+    [Migration("20250116204647_InitialDockerSql")]
+    partial class InitialDockerSql
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,6 +132,7 @@ namespace TilbudsPlatform.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastLoggedUserName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProjectId")

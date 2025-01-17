@@ -14,11 +14,11 @@
     <EditForm Model="newCustomer" OnSubmit="AddCustomer">
         <div>
             <label for="name">Navn:</label>
-            <input id="name" @bind="newCustomer.Name" />
+            <input type="text" @bind="newCustomer.Name" />
         </div>
         <div>
             <label for="email">Email:</label>
-            <input id="email" @bind="newCustomer.Email" />
+            <input type="text" @bind="newCustomer.Email" />
         </div>
         <button class="btn btn-primary" type="submit">Opret kunde</button>
     </EditForm>

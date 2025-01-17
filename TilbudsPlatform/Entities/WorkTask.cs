@@ -13,6 +13,6 @@ namespace TilbudsPlatform.Entities
         public ICollection<Worklog> Worklogs { get; set; }
         public decimal TotalLoggedHours { get; set; }
         public DateTime? LastLoggedDate { get; set; }
-        public string LastLoggedUserName { get; set; }
+        public string? LastLoggedUserName { get; set; }
     }
 }

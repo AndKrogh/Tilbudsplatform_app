@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TilbudsPlatform/TilbudsPlatform.core.csproj", "./"]
+COPY ["TilbudsPlatform.core.csproj", "."]
 RUN dotnet restore "./TilbudsPlatform.core.csproj"
 COPY . .
 WORKDIR "/src/."

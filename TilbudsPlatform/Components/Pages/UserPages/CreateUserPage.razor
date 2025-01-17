@@ -10,22 +10,22 @@
 
     <div class="mb-3">
         <label for="firstName">Fornavn:</label>
-        <InputText id="firstName" @bind-Value="newUser.FirstName" class="form-control" />
+        <InputText id="firstName" type="text" @bind-Value="newUser.FirstName" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label for="lastName">Efternavn:</label>
-        <InputText id="lastName" @bind-Value="newUser.LastName" class="form-control" />
+        <InputText id="lastName" type="text" @bind-Value="newUser.LastName" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label for="email">Email:</label>
-        <InputText id="email" @bind-Value="newUser.Email" type="email" class="form-control" />
+        <InputText id="email"  @bind-Value="newUser.Email" type="email" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label for="role">Rolle:</label>
-        <InputText id="role" @bind-Value="newUser.Role" class="form-control" />
+        <InputText id="role" type="text" @bind-Value="newUser.Role" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Opret</button>
