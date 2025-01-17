@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Build Docker Image
         run: |
-          docker build -t my-image:${{ github.sha }} -f TilbudsPlatform/Dockerfile .
+          docker build -t my-image:${{ github.sha }} -f ./TilbudsPlatform/Dockerfile .
 
       - name: Login to DigitalOcean Container Registry
         if: success()
