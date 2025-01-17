@@ -91,9 +91,3 @@ jobs:
         if: success()
         run: |
           docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
-
-      - name: Tag and Push Latest to DigitalOcean Registry (optional)
-        if: success()
-        run: |
-          docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
-          docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
