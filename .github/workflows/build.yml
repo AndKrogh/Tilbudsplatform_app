@@ -1,4 +1,4 @@
-name: CI build
+name: CI/CD build
 
 on:
   push:
@@ -64,36 +64,31 @@ jobs:
           echo "Test results:"
           cat TilbudsPlatform.Tests/TestResults/test-results.trx
 
+  build-and-push-docker:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Build Docker Image
         run: |
           docker build -t my-image:${{ github.sha }} .
 
-      - name: Push Docker Image to Local Docker Server
-        if: success()  
-        env:
-          DOCKER_SERVER_IP: ${{ secrets.DOCKER_SERVER_IP }} 
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          echo $DOCKER_PASSWORD | docker login $DOCKER_SERVER_IP --username $DOCKER_USERNAME --password-stdin
-
-          
-          docker tag my-image:${{ github.sha }} $DOCKER_SERVER_IP:5000/my-image:${{ github.sha }}
-
-          
-          docker push $DOCKER_SERVER_IP:5000/my-image:${{ github.sha }}
-
-      
-      - name: Tag and Push Latest to Local Docker Server (optional)
+      - name: Login to DigitalOcean Container Registry
         if: success()
-        env:
-          DOCKER_SERVER_IP: ${{ secrets.DOCKER_SERVER_IP }}  
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          
-          docker tag my-image:${{ github.sha }} $DOCKER_SERVER_IP:5000/my-image:latest
+          echo ${{ secrets.DO_REGISTRY_PASSWORD }} | docker login registry.digitalocean.com --username ${{ secrets.DO_REGISTRY_USERNAME }} --password-stdin
 
-          
-          echo $DOCKER_PASSWORD | docker login $DOCKER_SERVER_IP --username $DOCKER_USERNAME --password-stdin
-          docker push $DOCKER_SERVER_IP:5000/my-image:latest
+      - name: Tag Docker Image for DigitalOcean Registry
+        if: success()
+        run: |
+          docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
+
+      - name: Push Docker Image to DigitalOcean Registry
+        if: success()
+        run: |
+          docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
+
+      - name: Tag and Push Latest to DigitalOcean Registry (optional)
+        if: success()
+        run: |
+          docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
+          docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
