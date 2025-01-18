@@ -86,6 +86,8 @@ button {
     }
 
 .btn-danger {
+    margin-top: 10px;
+    margin-left: 5px;
     background-color: #dc3545;
 }
 
@@ -95,7 +97,7 @@ button {
 
 .btn-primary {
     margin-top:10px;
-    margin-left: 5px;
+    margin-left:5px;
     background-color: #0069d9;
 }
 
