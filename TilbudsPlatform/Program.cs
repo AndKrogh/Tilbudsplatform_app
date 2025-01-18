@@ -37,17 +37,6 @@ builder.Services.AddRazorComponents()
 
 var app = builder.Build();
 
-app.UseAntiforgery();
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-
-app.UseRouting();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -56,5 +45,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     app.UseMigrationsEndPoint();
 }
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();
