@@ -1,7 +1,6 @@
 @page "/customer"
 @inject ICustomerInterface CustomerService
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <h3>Kundeside</h3>
@@ -78,8 +77,6 @@
     {
         try
         {
-            var token = await JS.InvokeAsync<string>("getAntiforgeryToken");
-
             await CustomerService.AddCustomerAsync(newCustomer.Name, newCustomer.Email);
             newCustomer = new Customer();
             errorMessage = string.Empty;
