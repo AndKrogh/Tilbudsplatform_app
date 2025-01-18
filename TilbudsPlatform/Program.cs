@@ -7,7 +7,7 @@ using TilbudsPlatform.core.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration["DATABASE_URL"] ??
-    builder.Configuration.GetConnectionString("DefaultConnection") ??
+    builder.Configuration.GetConnectionString("TilbudsPlatformContext") ??
     throw new InvalidOperationException("Connection string not found.");
 
 builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
