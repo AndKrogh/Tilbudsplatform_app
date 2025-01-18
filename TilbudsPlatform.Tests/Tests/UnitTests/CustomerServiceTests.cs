@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TilbudsPlatform.core.Data;
 using TilbudsPlatform.core.Entities;
 using TilbudsPlatform.core.Services;
+using Xunit;
 
 public class CustomerServiceTests
 {
