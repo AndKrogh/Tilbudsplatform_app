@@ -68,14 +68,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Debug directory structure
+        run: ls -R
+
+      - name: Verify Dockerfile existence
+        run: |
+          if [ -f TilbudsPlatform/Dockerfile ]; then
+            echo "Dockerfile exists."
+          else
+            echo "Dockerfile not found."
+            exit 1
+          fi
+
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
-            token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Login to DigitalOcean Registry
-        run: |
-          doctl registry login
+        run: doctl registry login
 
       - name: Build Docker Image
         run: |
