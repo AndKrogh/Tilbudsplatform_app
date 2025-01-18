@@ -79,7 +79,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t my-image:${{ github.sha }} -f ./TilbudsPlatform/Dockerfile .
+          docker build -t my-image:${{ github.sha }} -f TilbudsPlatform/Dockerfile TilbudsPlatform
 
       - name: Tag Docker Image for DigitalOcean Registry
         run: |
