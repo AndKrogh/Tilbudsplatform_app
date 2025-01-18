@@ -1,4 +1,4 @@
-name: CI/CD build
+name: CI/CD Build and Docker Push
 
 on:
   push:
@@ -73,27 +73,18 @@ jobs:
         with:
             token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+      - name: Login to DigitalOcean Registry
+        run: |
+          doctl registry login
+
       - name: Build Docker Image
         run: |
           docker build -t my-image:${{ github.sha }} -f ./TilbudsPlatform/Dockerfile .
 
-      - name: Login to DigitalOcean Container Registry
-        if: success()
-        run: |
-          echo ${{ secrets.DO_REGISTRY_PASSWORD }} | docker login registry.digitalocean.com --username ${{ secrets.DO_REGISTRY_USERNAME }} --password-stdin
-
       - name: Tag Docker Image for DigitalOcean Registry
-        if: success()
         run: |
           docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
 
       - name: Push Docker Image to DigitalOcean Registry
-        if: success()
         run: |
           docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
-
-      - name: Tag and Push Latest to DigitalOcean Registry (optional)
-        if: success()
-        run: |
-          docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
-          docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
