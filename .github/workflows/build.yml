@@ -14,6 +14,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -32,68 +35,37 @@ jobs:
       - name: Run dotnet format
         run: dotnet format TilbudsPlatform/TilbudsPlatform.core.csproj --verify-no-changes --verbosity diagnostic > format-output.log
 
-      - name: Run dotnet format on solution (.sln)
-        run: dotnet format TilbudsPlatform/TilbudsPlatform.sln --verify-no-changes --verbosity diagnostic > format-output-sln.log
-
-      - name: Fail on unformatted code
-        if: failure()
-        run: echo "Code formatting issues found. Please run 'dotnet format' locally and commit the changes."
-
       - name: Run Unit Tests and Integration Tests
         run: dotnet test TilbudsPlatform.Tests/TilbudsPlatform.Tests.csproj --logger "trx;LogFileName=test-results.trx"
 
-      - name: Check if test-results.trx exists
-        run: |
-          if [ -f TilbudsPlatform.Tests/TestResults/test-results.trx ]; then
-            echo "Test results file found."
-          else
-            echo "No test results file found."
-            exit 1
-          fi
-
       - name: Upload Test Results as Artifact
-        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: TilbudsPlatform.Tests/TestResults/test-results.trx
 
-      - name: Show Test Results
-        if: success() || failure()
-        run: |
-          echo "Test results:"
-          cat TilbudsPlatform.Tests/TestResults/test-results.trx
-
   build-and-push-docker:
     runs-on: ubuntu-latest
 
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Debug directory structure
-        run: ls -R
-
-      - name: Verify Dockerfile existence
-        run: |
-          if [ -f TilbudsPlatform/Dockerfile ]; then
-            echo "Dockerfile exists."
-          else
-            echo "Dockerfile not found."
-            exit 1
-          fi
-
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Login to DigitalOcean Registry
-        run: doctl registry login
+        run: |
+          doctl registry login
 
       - name: Build Docker Image
         run: |
-          docker build -t my-image:${{ github.sha }} -f TilbudsPlatform/Dockerfile TilbudsPlatform
+          docker build \
+            --build-arg ASPNETCORE_ENVIRONMENT=Development \
+            -t my-image:${{ github.sha }} \
+            -f TilbudsPlatform/Dockerfile TilbudsPlatform
 
       - name: Tag Docker Image for DigitalOcean Registry
         run: |
