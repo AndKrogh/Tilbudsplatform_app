@@ -6,6 +6,12 @@ using TilbudsPlatform.core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "X-MyApp-Antiforgery";
+    options.HeaderName = "X-XSRF-TOKEN";
+});
+
 var connectionString = builder.Configuration["DATABASE_URL"] ??
     builder.Configuration.GetConnectionString("TilbudsPlatformContext") ??
     throw new InvalidOperationException("Connection string not found.");
@@ -31,6 +37,16 @@ builder.Services.AddRazorComponents()
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseAntiforgery();
+
+app.UseRouting();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -39,13 +55,5 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     app.UseMigrationsEndPoint();
 }
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 
 app.Run();
