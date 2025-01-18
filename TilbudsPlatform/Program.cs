@@ -5,8 +5,13 @@ using TilbudsPlatform.core.Interfaces;
 using TilbudsPlatform.core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration["DATABASE_URL"] ??
+    builder.Configuration.GetConnectionString("DefaultConnection") ??
+    throw new InvalidOperationException("Connection string not found.");
+
 builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TilbudsPlatformContext") ?? throw new InvalidOperationException("Connection string 'TilbudsPlatformContext' not found.")));
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<ICustomerInterface, CustomerService>();
 builder.Services.AddScoped<IProjectInterface, ProjectService>();
