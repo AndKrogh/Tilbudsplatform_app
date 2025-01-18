@@ -95,14 +95,6 @@ jobs:
         run: |
           docker build -t my-image:${{ github.sha }} -f TilbudsPlatform/Dockerfile TilbudsPlatform
 
-      - name: Tag Docker Image for DigitalOcean Registry
-        run: |
-          docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }}
-
-      - name: Push Docker Image to DigitalOcean Registry
-        run: |
-          docker push registry.digitalocean.com/tilbudsplatform-registry/my-image:${{ github.sha }} 
-
       - name: Tag and Push Latest to DigitalOcean Registry
         run: |
             docker tag my-image:${{ github.sha }} registry.digitalocean.com/tilbudsplatform-registry/my-image:latest
