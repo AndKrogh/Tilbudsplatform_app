@@ -11,7 +11,7 @@
     {
         <div class="alert alert-danger">@errorMessage</div>
     }
-    <EditForm Model="newCustomer" OnSubmit="AddCustomer">
+    <EditForm Model="newCustomer" OnSubmit="AddCustomer" FormName="CreateNewCustomer">
         <div>
             <label for="name">Navn:</label>
             <input type="text" @bind="newCustomer.Name" />

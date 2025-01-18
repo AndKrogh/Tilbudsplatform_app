@@ -15,7 +15,7 @@
 
 <div>
     <h4>Opret nyt projekt</h4>
-    <EditForm Model="newProject" OnValidSubmit="CreateProject">
+    <EditForm Model="newProject" OnValidSubmit="CreateProject" FormName="CreateNewProject">
         <div>
             <label>Projekt Navn:</label>
             <input type="text" @bind="newProject.Name" />
