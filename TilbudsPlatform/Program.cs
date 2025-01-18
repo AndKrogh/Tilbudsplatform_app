@@ -37,10 +37,11 @@ builder.Services.AddRazorComponents()
 
 var app = builder.Build();
 
+app.UseAntiforgery();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseAntiforgery();
 
 app.UseRouting();
 
