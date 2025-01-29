@@ -10,9 +10,6 @@ EXPOSE 8081
 # Set the environment variable for Development mode
 ENV ASPNETCORE_ENVIRONMENT=Development
 
-# Set environment variables for connection string
-ENV DATABASE_URL="Data Source=159.89.10.134,1433;Database=TilbudsPlatform.core;User ID=sa;Password=Harringoth29!;trustServerCertificate=true;"
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
