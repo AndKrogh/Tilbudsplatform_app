@@ -27,8 +27,16 @@
         color: var(--evening_sea);
     }
 
-.container-bg {
+.container-bg-jade {
     background-color: var(--jade);
+}
+
+.container-bg-forest-green {
+    background-color: var(--forest_green);
+}
+
+.container-bg-salem {
+    background-color: var( --salem);
 }
 
 .navbar-links {
