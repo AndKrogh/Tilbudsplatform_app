@@ -1,6 +1,14 @@
-﻿.top-row {
-    background-color: #343a40;
-    color: white;
+﻿:root {
+    --tiber_blue: #042f32;
+    --evening_sea: #045a44;
+    --jade: #04a777;
+    --crusta_orange: #ff7926;
+    --forest_green: #11b02b;
+    --salem: #047b49;
+}
+
+.navbar-color {
+    background-color: var(--tiber_blue);
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -8,11 +16,19 @@
     align-items: center;
 }
 
-.navbar-brand {
-    color: white;
+.navbar-logo {
+    color: var(--jade);
     text-decoration: none;
     font-size: 1.5em;
     font-weight: bold;
+}
+
+    .navbar-logo:hover {
+        color: var(--evening_sea);
+    }
+
+.container-bg {
+    background-color: var(--jade);
 }
 
 .navbar-links {
@@ -21,7 +37,7 @@
 }
 
     .navbar-links .nav-link {
-        color: white;
+        color: var(--jade);
         text-decoration: none;
         font-weight: bold;
         padding: 5px 10px;
@@ -30,7 +46,7 @@
     }
 
         .navbar-links .nav-link:hover {
-            background-color: #495057;
+            background-color: var(--evening_sea);
         }
 
 
