@@ -12,8 +12,7 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-XSRF-TOKEN";
 });
 
-var connectionString = builder.Configuration["DbContext"] ??
-    builder.Configuration.GetConnectionString("DbContext") ??
+var connectionString = builder.Configuration.GetConnectionString("DbContext") ??
     throw new InvalidOperationException("Connection string not found.");
 
 builder.Services.AddDbContext<TilbudsPlatformContext>(options =>
