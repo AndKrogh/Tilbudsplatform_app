@@ -15,11 +15,11 @@
             <h4>Opret ny kunde</h4>
             <div class="mb-3">
                 <label for="name" class="form-label">Navn:</label>
-                <input type="text" @bind="newCustomer.Name" class="form-control w-100" placeholder="Indtast navn" />
+                <input type="text" @bind="newCustomer.Name" class=" w-100" placeholder="Indtast navn" />
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="text" @bind="newCustomer.Email" class="form-control w-100" placeholder="Indtast email" />
+                <input type="text" @bind="newCustomer.Email" class=" w-100" placeholder="Indtast email" />
             </div>
             <button class=" btn-prim w-100" type="submit">Opret kunde</button>
         </div>
@@ -28,40 +28,42 @@
 
 <hr />
 
-<div>
-    <h4>Kundeliste</h4>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Kunde ID</th>
-                <th>Navn</th>
-                <th>Email</th>
-                <th>Handlinger</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (customers.Any())
-            {
-                @foreach (var customer in customers)
+<div class="container">
+    <div class="customer_input_box">
+        <h4>Kundeliste</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kunde ID</th>
+                    <th>Navn</th>
+                    <th>Email</th>
+                    <th>Handlinger</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (customers.Any())
+                {
+                    @foreach (var customer in customers)
+                    {
+                        <tr>
+                            <td>@customer.Id</td>
+                            <td>@customer.Name</td>
+                            <td>@customer.Email</td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="() => DeleteCustomerById(customer.Id)">Slet</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@customer.Id</td>
-                        <td>@customer.Name</td>
-                        <td>@customer.Email</td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="() => DeleteCustomerById(customer.Id)">Slet</button>
-                        </td>
+                        <td colspan="4">No customers available.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4">No customers available.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
