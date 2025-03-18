@@ -4,7 +4,7 @@
 @rendermode InteractiveServer
 
 <div class="container mt-5">
-    <div class="customer_input_box">
+    <div class="input_box">
         <h3>Kundeside</h3>
         <p>Velkommen til kundesiden. Her kan du oprette nye kunder og administrere din eksisterende kundeliste.</p>
     </div>
@@ -16,7 +16,7 @@
         <div class="alert alert-danger">@errorMessage</div>
     }
     <EditForm Model="newCustomer" OnSubmit="AddCustomer" FormName="CreateNewCustomer">
-        <div class="customer_input_box">
+        <div class="input_box">
             <h4>Opret ny kunde</h4>
             <div class="mb-3">
                 <label for="name" class="form-label">Navn:</label>
@@ -32,7 +32,7 @@
 </div>
 
 <div class="container mt-5 mb-5">
-    <div class="customer_input_box">
+    <div class="input_box">
         <h4>Kundeliste</h4>
         <table class="table">
             <thead>

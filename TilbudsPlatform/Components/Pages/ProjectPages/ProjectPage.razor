@@ -14,7 +14,7 @@
 <h3>Projekter</h3>
 
 <div class="container mt-5">
-    <div class="customer_input_box">
+    <div class="input_box">
         <h4>Opret nyt projekt</h4>
         <EditForm Model="newProject" OnValidSubmit="CreateProject" FormName="CreateNewProject">
             <div>
@@ -56,46 +56,48 @@
 
 <hr />
 
-<div>
-    <h4>Projektliste</h4>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Projekt ID</th>
-                <th>Navn</th>
-                <th>Start Dato</th>
-                <th>Slut Dato</th>
-                <th>Kunde</th>
-                <th>Handlinger</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (projects.Any())
-            {
-                @foreach (var project in projects)
+<div class="container mt-5 mb-5">
+    <div class="input_box">
+        <h4>Projektliste</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Projekt ID</th>
+                    <th>Navn</th>
+                    <th>Start Dato</th>
+                    <th>Slut Dato</th>
+                    <th>Kunde</th>
+                    <th>Handlinger</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (projects.Any())
+                {
+                    @foreach (var project in projects)
+                    {
+                        <tr>
+                            <td>@project.Id</td>
+                            <td>@project.Name</td>
+                            <td>@project.StartDate.ToShortDateString()</td>
+                            <td>@project.EndDate.ToShortDateString()</td>
+                            <td>@project.Customer?.Name</td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Slet</button>
+                                <button class="btn btn-prim" @onclick="() => NavigateToEstimate(project.Id)">Estimat</button>
+                                <button class="btn btn-prim" onclick="() => ExportToExcel">Eksporter som excel</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@project.Id</td>
-                        <td>@project.Name</td>
-                        <td>@project.StartDate.ToShortDateString()</td>
-                        <td>@project.EndDate.ToShortDateString()</td>
-                        <td>@project.Customer?.Name</td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="() => DeleteProject(project.Id)">Slet</button>
-                            <button class="btn btn-prim" @onclick="() => NavigateToEstimate(project.Id)">Estimat</button>
-                            <button class="btn btn-prim" onclick="() => ExportToExcel">Eksporter som excel</button>
-                        </td>
+                        <td colspan="6">No projects available.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6">No projects available.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {

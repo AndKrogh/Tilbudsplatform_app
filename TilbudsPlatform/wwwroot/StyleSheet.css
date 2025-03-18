@@ -163,7 +163,7 @@ hr {
     border-top: 1px solid #ddd;
 }
 
-.customer_input_box {
+.input_box {
     border: 2px solid var(--jade);
     padding: 20px;
     border-radius: 8px;
