@@ -119,16 +119,14 @@ button {
         background-color: #a71d2a;
     }
 
-.btn-primary {
-    margin-top: 10px;
-    margin-left: 5px;
-    color: var(--jade);
-    background-color: var(--tiber_blue);
+.btn-prim {
+    color: var(--tiber_blue);
+    background-color: var(--jade);
 }
 
-    .btn-primary:hover {
-        background-color: var(--jade);
-        color: var(--tiber_blue);
+    .btn-prim:hover {
+        background-color: var(--tiber_blue);
+        color: var(--jade);
     }
 
 .table {
@@ -163,4 +161,19 @@ hr {
     margin: 20px 0;
     border: none;
     border-top: 1px solid #ddd;
+}
+
+.customer_input_box {
+    border: 2px solid var(--jade);
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.wide-input {
+    width: 100%; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
 }
