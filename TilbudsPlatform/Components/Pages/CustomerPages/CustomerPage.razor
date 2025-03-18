@@ -3,32 +3,35 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Kundeside</h3>
+<div class="container mt-5">
+    <div class="customer_input_box">
+        <h3>Kundeside</h3>
+        <p>Velkommen til kundesiden. Her kan du oprette nye kunder og administrere din eksisterende kundeliste.</p>
+    </div>
+</div>
 
-<div class="container">
+<div class="container mt-5">
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger">@errorMessage</div>
     }
     <EditForm Model="newCustomer" OnSubmit="AddCustomer" FormName="CreateNewCustomer">
-        <div class="customer_input_box  ">
+        <div class="customer_input_box">
             <h4>Opret ny kunde</h4>
             <div class="mb-3">
                 <label for="name" class="form-label">Navn:</label>
-                <input type="text" @bind="newCustomer.Name" class=" w-100" placeholder="Indtast navn" />
+                <input type="text" @bind="newCustomer.Name" class="w-100" placeholder="Indtast navn" />
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="text" @bind="newCustomer.Email" class=" w-100" placeholder="Indtast email" />
+                <input type="text" @bind="newCustomer.Email" class="w-100" placeholder="Indtast email" />
             </div>
-            <button class=" btn-prim w-100" type="submit">Opret kunde</button>
+            <button class="btn-prim w-100" type="submit">Opret kunde</button>
         </div>
     </EditForm>
 </div>
 
-<hr />
-
-<div class="container">
+<div class="container mt-5 mb-5">
     <div class="customer_input_box">
         <h4>Kundeliste</h4>
         <table class="table">
@@ -65,6 +68,7 @@
         </table>
     </div>
 </div>
+
 
 
 @code {
