@@ -15,3 +15,10 @@ EF Core (Database ORM)
 MSSQL (database)
 
 Digital ocean (Platform for deployment)
+
+
+## License
+This project is licensed under the [MIT License](LICENSE).
+
+### Copyright
+© 2025 Anders Krogh. All rights reserved.
