@@ -120,13 +120,15 @@ button {
     }
 
 .btn-primary {
-    margin-top:10px;
-    margin-left:5px;
-    background-color: #0069d9;
+    margin-top: 10px;
+    margin-left: 5px;
+    color: var(--jade);
+    background-color: var(--tiber_blue);
 }
 
     .btn-primary:hover {
-        background-color: #0056b3;
+        background-color: var(--jade);
+        color: var(--tiber_blue);
     }
 
 .table {
