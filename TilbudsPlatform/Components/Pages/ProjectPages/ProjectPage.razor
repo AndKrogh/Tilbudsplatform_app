@@ -13,43 +13,45 @@
 
 <h3>Projekter</h3>
 
-<div>
-    <h4>Opret nyt projekt</h4>
-    <EditForm Model="newProject" OnValidSubmit="CreateProject" FormName="CreateNewProject">
-        <div>
-            <label>Projekt Navn:</label>
-            <input type="text" @bind="newProject.Name" />
-        </div>
-        <div>
-            <label>Beskrivelse:</label>
-            <input type="text" @bind="newProject.Description" />
-        </div>
-        <div>
-            <label>Start Dato:</label>
-            <input type="date" @bind="newProject.StartDate" />
-        </div>
-        <div>
-            <label>Slut Dato:</label>
-            <input type="date" @bind="newProject.EndDate" />
-        </div>
-        <div>
-            <label>Estimeret Timer:</label>
-            <input type="number" @bind="newProject.EstimatedHours" />
-        </div>
-        <div>
-            <label>Timepris:</label>
-            <input type="number" @bind="newProject.HourlyRate" />
-        </div>
-        <div>
-            <label>Overskudsgrad:</label>
-            <input type="number" @bind="newProject.ProfitMargin" />
-        </div>
-        <div>
-            <label>Kunde ID:</label>
-            <input type="number" @bind="newProject.CustomerId" />
-        </div>
-        <button class="btn btn-prim" type="submit">Opret</button>
-    </EditForm>
+<div class="container mt-5">
+    <div class="customer_input_box">
+        <h4>Opret nyt projekt</h4>
+        <EditForm Model="newProject" OnValidSubmit="CreateProject" FormName="CreateNewProject">
+            <div>
+                <label>Projekt Navn:</label>
+                <input type="text" @bind="newProject.Name" />
+            </div>
+            <div>
+                <label>Beskrivelse:</label>
+                <input type="text" @bind="newProject.Description" />
+            </div>
+            <div>
+                <label>Start Dato:</label>
+                <input type="date" @bind="newProject.StartDate" />
+            </div>
+            <div>
+                <label>Slut Dato:</label>
+                <input type="date" @bind="newProject.EndDate" />
+            </div>
+            <div>
+                <label>Estimeret Timer:</label>
+                <input type="number" @bind="newProject.EstimatedHours" />
+            </div>
+            <div>
+                <label>Timepris:</label>
+                <input type="number" @bind="newProject.HourlyRate" />
+            </div>
+            <div>
+                <label>Overskudsgrad:</label>
+                <input type="number" @bind="newProject.ProfitMargin" />
+            </div>
+            <div>
+                <label>Kunde ID:</label>
+                <input type="number" @bind="newProject.CustomerId" />
+            </div>
+            <button class="btn btn-prim" type="submit">Opret</button>
+        </EditForm>
+    </div>
 </div>
 
 <hr />
