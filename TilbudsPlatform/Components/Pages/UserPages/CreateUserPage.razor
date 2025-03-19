@@ -5,31 +5,35 @@
 
 <h3>Opret ny bruger</h3>
 
-<EditForm Model="newUser" OnValidSubmit="HandleCreateUser" FormName="CreateUserForm">
-    <ValidationSummary />
+<div class="container mt-5">
+    <div class="input_box">
+        <EditForm Model="newUser" OnValidSubmit="HandleCreateUser" FormName="CreateUserForm">
+            <ValidationSummary />
 
-    <div class="mb-3">
-        <label for="firstName">Fornavn:</label>
-        <InputText id="firstName" type="text" @bind-Value="newUser.FirstName" class="form-control" />
+            <div class="mb-3">
+                <label for="firstName">Fornavn:</label>
+                <InputText id="firstName" type="text" @bind-Value="newUser.FirstName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label for="lastName">Efternavn:</label>
+                <InputText id="lastName" type="text" @bind-Value="newUser.LastName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email">Email:</label>
+                <InputText id="email" @bind-Value="newUser.Email" type="email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label for="role">Rolle:</label>
+                <InputText id="role" type="text" @bind-Value="newUser.Role" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-prim">Opret</button>
+        </EditForm>
     </div>
-
-    <div class="mb-3">
-        <label for="lastName">Efternavn:</label>
-        <InputText id="lastName" type="text" @bind-Value="newUser.LastName" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label for="email">Email:</label>
-        <InputText id="email"  @bind-Value="newUser.Email" type="email" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label for="role">Rolle:</label>
-        <InputText id="role" type="text" @bind-Value="newUser.Role" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-prim">Opret</button>
-</EditForm>
+</div>
 
 
 @if (errorMessage != null)
