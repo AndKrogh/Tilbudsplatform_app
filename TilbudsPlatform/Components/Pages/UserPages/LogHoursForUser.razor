@@ -12,41 +12,48 @@
 
     <div class="container mt-5">
         <div class="input_box">
-            <label for="workTask">Vælg Arbejdsopgave</label>
-            <InputSelect id="workTask" @bind-Value="worklog.WorkTaskId">
-                <option value="">Vælg arbejdsopgave</option>
-                @if (workTasks != null)
-                {
-                    @foreach (var task in workTasks)
+            <div>
+                <label for="workTask">Vælg Arbejdsopgave</label>
+                <InputSelect id="workTask" @bind-Value="worklog.WorkTaskId">
+                    <option value="">Vælg arbejdsopgave</option>
+                    @if (workTasks != null)
                     {
-                        <option value="@task.Id">@task.Title</option>
+                        @foreach (var task in workTasks)
+                        {
+                            <option value="@task.Id">@task.Title</option>
+                        }
                     }
-                }
-                else
-                {
-                    <option value="">Ingen arbejdsopgaver</option>
-                }
-            </InputSelect>
+                    else
+                    {
+                        <option value="">Ingen arbejdsopgaver</option>
+                    }
+                </InputSelect>
+            </div>
+            
+            <hr />
+
+            <div>
+                <label for="user">Vælg Bruger</label>
+                <InputSelect id="user" @bind-Value="worklog.UserId">
+                    <option value="">Vælg bruger</option>
+                    @if (users != null)
+                    {
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.Id">@user.FirstName @user.LastName</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">Ingen brugere</option>
+                    }
+                </InputSelect>
+            </div>
         </div>
     </div>
 
-    <div>
-        <label for="user">Vælg Bruger</label>
-        <InputSelect id="user" @bind-Value="worklog.UserId">
-            <option value="">Vælg bruger</option>
-            @if (users != null)
-            {
-                @foreach (var user in users)
-                {
-                    <option value="@user.Id">@user.FirstName @user.LastName</option>
-                }
-            }
-            else
-            {
-                <option value="">Ingen brugere</option>
-            }
-        </InputSelect>
-    </div>
+
+
 
     <div>
         <label for="hours">Timer Arbejdet</label>
