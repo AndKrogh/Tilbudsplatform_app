@@ -14,98 +14,108 @@
     </div>
 </div>
 
-<EditForm Model="newWorklog" OnValidSubmit="HandleCreateWorklog" FormName="CreateNewWorklog">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="container mt-5">
+    <div class="input_box">
+        <EditForm Model="newWorklog" OnValidSubmit="HandleCreateWorklog" FormName="CreateNewWorklog">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <div>
-        <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
-        <InputText id="newWorkTaskTitle" type="text" @bind-Value="newWorkTaskTitle" />
+            <div>
+                <label for="newWorkTaskTitle">Ny arbejdsopgave titel:</label>
+                <InputText id="newWorkTaskTitle" type="text" @bind-Value="newWorkTaskTitle" />
+            </div>
+
+            <div>
+                <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
+                <InputText id="newWorkTaskDescription" type="text" @bind-Value="newWorkTaskDescription" />
+            </div>
+
+            <div>
+                <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
+                <select id="newProjectId" @bind="newProjectId">
+                    <option value="">Vælg</option>
+                    @if (projects != null)
+                    {
+                        @foreach (var project in projects)
+                        {
+                            <option value="@project.Id">@project.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">Loading Projects...</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label for="userId">Bruger:</label>
+                <select id="userId" @bind="newWorklog.UserId">
+                    <option value="">Vælg bruger</option>
+                    @if (users != null)
+                    {
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.Id">@user.FirstName @user.LastName</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">Loading Users...</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-prim">Opret arbejdslog</button>
+        </EditForm>
     </div>
+</div>
 
-    <div>
-        <label for="newWorkTaskDescription">Ny arbejdsopgave beskrivelse:</label>
-        <InputText id="newWorkTaskDescription" type="text" @bind-Value="newWorkTaskDescription" />
+
+<div class="container mt-5">
+    <div class="input_box">
+        @if (errorMessage != null)
+        {
+            <div>@errorMessage</div>
+        }
+
+        <h3>Arbejdslogs</h3>
+
+        @if (worklogs == null)
+        {
+            <p>Loading worklogs...</p>
+        }
+        else if (!worklogs.Any())
+        {
+            <p>No worklogs found.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Beskrivelse</th>
+                        <th>Arbejdsopgave</th>
+                        <th>Bruger</th>
+                        <th>Projekt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var worklog in worklogs)
+                    {
+                        <tr>
+                            <td>@worklog.Description</td>
+                            <td>@worklog.WorkTask.Title</td>
+                            <td>@worklog.User.FirstName @worklog.User.LastName</td>
+                            <td>@worklog.WorkTask.Project.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
     </div>
-
-    <div>
-        <label for="newProjectId">Vælg projekt for arbejdsopgave:</label>
-        <select id="newProjectId" @bind="newProjectId">
-            <option value="">Vælg</option>
-            @if (projects != null)
-            {
-                @foreach (var project in projects)
-                {
-                    <option value="@project.Id">@project.Name</option>
-                }
-            }
-            else
-            {
-                <option value="">Loading Projects...</option>
-            }
-        </select>
-    </div>
-
-    <div>
-        <label for="userId">Bruger:</label>
-        <select id="userId" @bind="newWorklog.UserId">
-            <option value="">Vælg bruger</option>
-            @if (users != null)
-            {
-                @foreach (var user in users)
-                {
-                    <option value="@user.Id">@user.FirstName @user.LastName</option>
-                }
-            }
-            else
-            {
-                <option value="">Loading Users...</option>
-            }
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-prim">Opret arbejdslog</button>
-</EditForm>
-
-@if (errorMessage != null)
-{
-    <div>@errorMessage</div>
-}
-
-<h3>Arbejdslogs</h3>
-
-@if (worklogs == null)
-{
-    <p>Loading worklogs...</p>
-}
-else if (!worklogs.Any())
-{
-    <p>No worklogs found.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Beskrivelse</th>
-                <th>Arbejdsopgave</th>
-                <th>Bruger</th>
-                <th>Projekt</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var worklog in worklogs)
-            {
-                <tr>
-                    <td>@worklog.Description</td>
-                    <td>@worklog.WorkTask.Title</td>
-                    <td>@worklog.User.FirstName @worklog.User.LastName</td>
-                    <td>@worklog.WorkTask.Project.Name</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+</div>
 
 @code {
     private Worklog newWorklog = new Worklog();
