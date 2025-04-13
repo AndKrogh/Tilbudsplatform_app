@@ -6,7 +6,13 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Opret ny arbejdslog</h3>
+
+<div class="container mt-5">
+    <div class="input_box">
+        <h3>Opret ny arbejdslog</h3>
+        <p>Denne side gør det muligt at lave arbejdslogs.</p>
+    </div>
+</div>
 
 <EditForm Model="newWorklog" OnValidSubmit="HandleCreateWorklog" FormName="CreateNewWorklog">
     <DataAnnotationsValidator />
