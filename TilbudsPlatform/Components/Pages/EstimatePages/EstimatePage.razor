@@ -1,80 +1,78 @@
 @page "/estimate/{projectId:int}"
 @inject IEstimateInterface EstimateService
 @inject IProjectInterface ProjectService
-@inject IWorklogInterface WorklogService
 @inject IWorkTaskInterface WorkTaskService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <button @onclick="GoBack" class="btn btn-secondary">Tilbage til projekt</button>
 
-
 <h3>Samlede omkostninger</h3>
 @if (estimate != null && project != null)
 {
-        <div>
-            <h4>Estimat detaljer</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Projekt ID</th>
-                        <th>Projekt Navn</th>
-                        <th>Estimeret Timer</th>
-                        <th>Timepris</th>
-                        <th>Samlede Omkostninger</th>
-                        <th>Profitmargin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>@estimate.ProjectId</td>
-                        <td>@project.Name</td>
-                        <td>@estimate.EstimatedHours</td>
-                        <td>@estimate.HourlyRate</td>
-                        <td>@estimate.TotalCost</td>
-                        <td>@project.ProfitMargin</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div>
+        <h4>Estimat detaljer</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Projekt ID</th>
+                    <th>Projekt Navn</th>
+                    <th>Estimeret Timer</th>
+                    <th>Timepris</th>
+                    <th>Samlede Omkostninger</th>
+                    <th>Profitmargin (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@estimate.ProjectId</td>
+                    <td>@project.Name</td>
+                    <td>@estimate.EstimatedHours</td>
+                    <td>@estimate.HourlyRate</td>
+                    <td>@estimate.TotalCost</td>
+                    <td>@project.ProfitMargin</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <h4>Arbejdsopgaver for @project.Name</h4>
+    <h4>Arbejdsopgaver for @project.Name</h4>
     @if (workTasks != null && workTasks.Any())
     {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Arbejdsopgave ID</th>
-                            <th>Titel</th>
-                            <th>Beskrivelse</th>
-                            <th>Estimerede Timer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Arbejdsopgave ID</th>
+                    <th>Titel</th>
+                    <th>Beskrivelse</th>
+                    <th>Estimerede Timer</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var worktask in workTasks)
                 {
-                                <tr>
-                                    <td>@worktask.Id</td>
-                                    <td>@worktask.Title</td>
-                                    <td>@worktask.Description</td>
-                                    <td>@worktask.Worklogs</td>
-                                </tr>
+                    <tr>
+                        <td>@worktask.Id</td>
+                        <td>@worktask.Title</td>
+                        <td>@worktask.Description</td>
+                        <td>@worktask.DurationHours</td>
+                    </tr>
                 }
-                    </tbody>
-                </table>
+            </tbody>
+        </table>
     }
     else
     {
-                <p>Ingen arbejdsopgaver fundet for dette projekt.</p>
+        <p>Ingen arbejdsopgaver fundet for dette projekt.</p>
     }
 }
 else if (errorMessage != null)
 {
-        <p style="color: red;">@errorMessage</p>
+    <p style="color: red;">@errorMessage</p>
 }
 else
 {
-        <p>Indlæser...</p>
+    <p>Indlæser...</p>
 }
 
 @code {
@@ -104,4 +102,3 @@ else
         NavigationManager.NavigateTo("/project");
     }
 }
-
